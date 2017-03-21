@@ -1,0 +1,4 @@
+package: github.com/gempir/twitch-chess
+import:
+- package: github.com/labstack/echo
+  version: ~3.1.0-rc.1

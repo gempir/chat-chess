@@ -22,3 +22,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
+.idea/
+twitch-chess
+glide.lock
+vendor/
