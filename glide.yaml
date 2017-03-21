@@ -2,3 +2,7 @@ package: github.com/gempir/twitch-chess
 import:
 - package: github.com/labstack/echo
   version: ~3.1.0-rc.1
+- package: github.com/rs/xid
+  version: ~1.0.0
+- package: github.com/dgrijalva/jwt-go
+  version: ^3.0.0
