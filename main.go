@@ -11,8 +11,10 @@ func main() {
 
 	e.Static("/", "public")
 	e.File("/", "views/index.html")
-	e.POST("/new/:channel", startGame)
-	e.POST("/move/:gameid", handleMove)
+	e.PUT("/game", startGame)
+	e.PUT("/move/:gameid", handleMove)
+	e.GET("/move/:gameid", handleMoveRequest)
+	e.GET("/game/:gameid", handleStatusRequest)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

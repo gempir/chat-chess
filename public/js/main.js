@@ -16,6 +16,7 @@ var onSnapEnd = function() {
     board.position(game.fen());
 };
 
+
 var onDrop = function(source, target, piece) {
     if (piece.startsWith("b")) {
         return "snapback";
@@ -32,14 +33,25 @@ var onDrop = function(source, target, piece) {
     if (move === null) return 'snapback';
 
     $.ajax({
-        method: "POST",
+        method: "PUT",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         url: "/move/" + getCookie("gameId"),
         data: JSON.stringify({from: source, to: target})
     });
+
+    setTimeout(setEnemyMove, 30000);
 };
 
+function setEnemyMove() {
+    $.ajax({
+        method: "GET",
+        url: "/move/" + getCookie("gameId")
+    }).done(function(msg){
+        game.move({ from: msg.from, to: msg.to });
+        board.move(msg.from + "-" + msg.to);
+    });
+}
 
 var board = ChessBoard('board', {
     draggable: true,
@@ -72,9 +84,11 @@ $startGameButton.click(function () {
 
 function joinAndStart(channel) {
     $.ajax({
-        method: "POST",
-        url: "/new/" + channel,
-        data: {}
+        method: "PUT",
+        url: "/game",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({channel: channel})
     })
     .done(function(msg) {
         setCookie("gameId", msg.id, 1);
