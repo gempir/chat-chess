@@ -16,5 +16,5 @@ func main() {
 	e.GET("/move/:gameid", handleMoveRequest)
 	e.GET("/game/:gameid", handleStatusRequest)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":1337"))
 }

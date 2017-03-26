@@ -43,6 +43,7 @@ var onDrop = function(source, target, piece) {
     setTimeout(setEnemyMove, 30000);
 };
 
+
 function setEnemyMove() {
     $.ajax({
         method: "GET",
@@ -51,6 +52,7 @@ function setEnemyMove() {
         game.move({ from: msg.from, to: msg.to });
         board.move(msg.from + "-" + msg.to);
     });
+    $('.startGameBox').html('<h4 class="listenChannel"> </h4>');
 }
 
 var board = ChessBoard('board', {
@@ -75,8 +77,6 @@ $startGameButton.click(function () {
     }
     $channelName.fadeOut();
     $startGameButton.fadeOut();
-    $('.startGameBox').html('<div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div><div class="rect5"></div></div>');
-
 
     joinAndStart(channel)
 });
@@ -92,7 +92,7 @@ function joinAndStart(channel) {
     })
     .done(function(msg) {
         setCookie("gameId", msg.id, 1);
-        $('.startGameBox').html('<h4 class="listenChannel">Channel: ' + msg.channel + '</h4>');
+        $('.startGameBox').html('<h4 class="listenChannel">Game has started</h4>');
     });
 }
 

@@ -13,12 +13,16 @@ body {
 
 #board {
 	margin: 2rem auto;
+	position: absolute;
+	top: 200px;
+	left: 0;
+	right: 0;
 }
 
 .startGameBox {
 	display: block;
 	width: 600px;
-	margin: 0 auto;
+	margin: 40px auto;
 	text-align: center;
 }
 

@@ -25,6 +25,7 @@ type Game struct {
 	twitchClient *twitch.Client
 	chessGame    *chess.Game
 	moves 		 []string
+	voters 		 []string
 }
 
 type MoveResponse struct {
@@ -45,7 +46,7 @@ func startGame(c echo.Context) error {
 	game := new(Game)
 	c.Bind(game)
 	game.Id = xid.New().String()
-	game.twitchClient = twitch.NewClient("justinfan123123", "oauth:123123")
+	game.twitchClient = twitch.NewClient(botusername, botoauth)
 	game.chessGame = chess.NewGame()
 	game.GameFen = game.chessGame.FEN()
 
@@ -62,6 +63,15 @@ func startGame(c echo.Context) error {
 
 func (g *Game) joinChannel() {
 	g.twitchClient.Join(g.Channel)
+}
+
+func (g *Game) hasVoted(username string) bool {
+	for _, user := range g.voters {
+		if user == username {
+			return true
+		}
+	}
+	return false
 }
 
 func handleStatusRequest(c echo.Context) error {
@@ -92,6 +102,8 @@ func handleMove(c echo.Context) error {
 
 	for _, move := range moves {
 		if move.String() == moveRequest.From + moveRequest.To {
+			fmt.Println("Player making move " + moveRequest.From + "-" + moveRequest.To)
+			game.twitchClient.Say(game.Channel, "/me Twitch-Ches: Chat you now have 30 Seconds time to vote! Vote like this: b7-b5", "")
 			game.chessGame.Move(move)
 			game.GameFen = game.chessGame.FEN()
 			game.moves = game.moves[:0]
@@ -137,13 +149,35 @@ func (g *Game) getChatMove() (string, string) {
 			continue
 		}
 	}
+	if mostVotedMove == "" {
+		moves := g.chessGame.ValidMoves()
+		g.chessGame.Move(moves[0])
+		g.GameFen = g.chessGame.FEN()
+		g.moves = g.moves[:0]
+		fmt.Println("Chat making AUTO move " + moves[0].S1().String() + "-" +moves[0].S2().String())
+		return moves[0].S1().String(), moves[0].S2().String()
+	}
 
 	resultMove := strings.Split(mostVotedMove, "-")
+
+	moves := g.chessGame.ValidMoves()
+
+	for _, move := range moves {
+		if move.String() == resultMove[0] + resultMove[1] {
+			fmt.Println("Chat making move " + resultMove[0] + "-" + resultMove[1])
+			g.chessGame.Move(move)
+			g.GameFen = g.chessGame.FEN()
+			g.moves = g.moves[:0]
+		}
+	}
 
 	return resultMove[0], resultMove[1]
 }
 
 func (g *Game) newChatMessage(message twitch.Message) {
+	if g.hasVoted(message.Username) {
+		return
+	}
 	if regResult := MoveRegex.FindAllString(message.Text, 1); len(regResult) > 0 {
 		g.moves = append(g.moves, regResult[0])
 		return
