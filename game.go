@@ -23,8 +23,14 @@ type Game struct {
 }
 
 type MoveResponse struct {
-	Valid bool `json:"valid"`
+
 }
+
+type MoveRequest struct {
+	From string `json:"from"`
+	To string `json:"to"`
+}
+
 
 type ErrorJson struct {
 	Error string `json:"error_message"`
@@ -36,6 +42,8 @@ func startGame(c echo.Context) error {
 	game.Channel = c.Param("channel")
 	game.twitchClient = twitch.NewClient("justinfan123123", "oauth:123123")
 	game.chessGame = chess.NewGame()
+
+	fmt.Println("Starting New Game Id: " + game.Id + ", Channel: " + game.Channel)
 
 	go game.twitchClient.OnNewMessage(game.newChatMessage)
 	go game.twitchClient.Connect()
@@ -51,7 +59,10 @@ func (g *Game) joinChannel() {
 }
 
 func handleMove(c echo.Context) error {
-	_, err := getGame(c.Param("gameid"))
+	moveRequest := new(MoveRequest)
+	c.Bind(moveRequest)
+
+	game, err := getGame(c.Param("gameid"))
 	if err != nil {
 		fmt.Println(err.Error())
 		return c.JSON(http.StatusNotFound, ErrorJson{
@@ -59,7 +70,20 @@ func handleMove(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, MoveResponse{Valid: true})
+	moves := game.chessGame.ValidMoves()
+
+	fmt.Println(moveRequest.From + moveRequest.To)
+
+	for _, move := range moves {
+		if move.String() == moveRequest.From + moveRequest.To {
+			game.chessGame.Move(move)
+			return c.JSON(http.StatusOK, MoveResponse{})
+		}
+	}
+
+	return c.JSON(http.StatusBadRequest, ErrorJson{
+		Error: "Not a valid move",
+	})
 }
 
 func (g *Game) newChatMessage(message twitch.Message) {
