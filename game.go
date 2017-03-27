@@ -177,6 +177,10 @@ func (g *Game) getMostVotedValidMove() string {
 func (g *Game) removeMoveFromVotes(moveDel string) {
 	for i, move := range g.moves {
 		if move == moveDel {
+			if len(g.moves) == 1 {
+				g.moves = g.moves[:0]
+				return
+			}
 			g.moves = append(g.moves[:i], g.moves[i+1:]...)
 		}
 	}
