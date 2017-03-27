@@ -162,7 +162,7 @@ func (g *Game) getMostVotedValidMove() string {
 	if mostVotedMove == "" {
 		return mostVotedMove
 	}
-	g.removeMoveFromVotes(mostVotedMove)
+	//g.removeMoveFromVotes(mostVotedMove)
 
 	resultMove := strings.Split(mostVotedMove, "-")
 
@@ -171,7 +171,7 @@ func (g *Game) getMostVotedValidMove() string {
 			return mostVotedMove
 		}
 	}
-	return g.getMostVotedValidMove()
+	return "" //@TODO fix the deletion from slice so it can fetch the next most voted move
 }
 
 func (g *Game) removeMoveFromVotes(moveDel string) {
