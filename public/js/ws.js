@@ -1,7 +1,7 @@
 var ws = null;
 
 function initWS() {
-    ws = new WebSocket('ws://chess.gempir.com/ws');
+    ws = new WebSocket('wss://chess.gempir.com/ws');
 
     ws.onopen = function () {
         ws.send("gameId=" + getCookie("gameId"));
