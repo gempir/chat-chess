@@ -7,3 +7,5 @@ import:
 - package: github.com/dgrijalva/jwt-go
   version: ^3.0.0
 - package: github.com/notnil/chess
+- package: github.com/gempir/go-twitch-irc
+  version: ~0.1.0

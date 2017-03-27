@@ -12,9 +12,7 @@ func main() {
 	e.Static("/", "public")
 	e.File("/", "views/index.html")
 	e.PUT("/game", startGame)
-	e.PUT("/move/:gameid", handleMove)
-	e.GET("/move/:gameid", handleMoveRequest)
-	e.GET("/game/:gameid", handleStatusRequest)
+	e.GET("/ws", handleWebsocketConnection)
 
 	e.Logger.Fatal(e.Start(":1337"))
 }

@@ -7,36 +7,37 @@ import (
 	"github.com/notnil/chess"
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
+	"golang.org/x/net/websocket"
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var (
-	Games []*Game
+	Games     []*Game
 	MoveRegex = regexp.MustCompile(`(?i)^([a-h])([1-8])-([a-h])([1-8])`)
 )
 
 type Game struct {
-	Id           string `json:"id"`
-	Channel      string `json:"channel"`
-	GameFen		 string `json:"game_fen"`
-	messages     chan string
-	twitchClient *twitch.Client
-	chessGame    *chess.Game
-	moves 		 []string
-	voters 		 []string
+	Id                  string `json:"id"`
+	Channel             string `json:"channel"`
+	GameFen             string `json:"game_fen"`
+	messages            chan string
+	twitchClient        *twitch.Client
+	chessGame           *chess.Game
+	websocketConnection *websocket.Conn
+	moves               []string
+	voters              []string
 }
 
 type MoveResponse struct {
-
 }
 
 type MoveRequest struct {
 	From string `json:"from"`
-	To string `json:"to"`
+	To   string `json:"to"`
 }
-
 
 type ErrorJson struct {
 	Error string `json:"error_message"`
@@ -86,49 +87,27 @@ func handleStatusRequest(c echo.Context) error {
 	return c.JSON(http.StatusOK, game)
 }
 
-func handleMove(c echo.Context) error {
-	moveRequest := new(MoveRequest)
-	c.Bind(moveRequest)
-
-	game, err := getGame(c.Param("gameid"))
-	if err != nil {
-		fmt.Println(err.Error())
-		return c.JSON(http.StatusNotFound, ErrorJson{
-			Error: err.Error(),
-		})
-	}
-
-	moves := game.chessGame.ValidMoves()
+func (g *Game) makeMove(from, to string) {
+	moves := g.chessGame.ValidMoves()
 
 	for _, move := range moves {
-		if move.String() == moveRequest.From + moveRequest.To {
-			fmt.Println("Player making move " + moveRequest.From + "-" + moveRequest.To)
-			game.twitchClient.Say(game.Channel, "/me Twitch-Ches: Chat you now have 30 Seconds time to vote! Vote like this: b7-b5", "")
-			game.chessGame.Move(move)
-			game.GameFen = game.chessGame.FEN()
-			game.moves = game.moves[:0]
-			return c.JSON(http.StatusOK, MoveResponse{})
+		if move.String() == from + to {
+
+			fmt.Println("Player making move " + from + "-" + to)
+			sayText := fmt.Sprintf("/me Twitch-Ches: Player made move %s-%s. Chat now has 30 Seconds to vote! Format: b7-b5", from, to)
+			fmt.Printf("[SAY][%s] %s", g.Channel, sayText)
+
+			g.twitchClient.Say(g.Channel, sayText)
+			g.chessGame.Move(move)
+			g.GameFen = g.chessGame.FEN()
+			// reset voters
+			g.moves = g.moves[:0]
+			g.voters = g.voters[:0]
 		}
 	}
-
-	return c.JSON(http.StatusBadRequest, ErrorJson{
-		Error: "Not a valid move",
-	})
 }
 
-func handleMoveRequest(c echo.Context) error {
-	game, err := getGame(c.Param("gameid"))
-	if err != nil {
-		fmt.Println(err.Error())
-		return c.JSON(http.StatusNotFound, ErrorJson{
-			Error: err.Error(),
-		})
-	}
-
-	from, to := game.getChatMove()
-	return c.JSON(http.StatusOK, MoveRequest{From: from, To: to})
-}
-func (g *Game) getChatMove() (string, string) {
+func (g *Game) sendChatMove() {
 
 	movesMap := make(map[string]int)
 
@@ -154,8 +133,9 @@ func (g *Game) getChatMove() (string, string) {
 		g.chessGame.Move(moves[0])
 		g.GameFen = g.chessGame.FEN()
 		g.moves = g.moves[:0]
-		fmt.Println("Chat making AUTO move " + moves[0].S1().String() + "-" +moves[0].S2().String())
-		return moves[0].S1().String(), moves[0].S2().String()
+		fmt.Println("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
+		g.wsSend("move=" + moves[0].S1().String() + "-" + moves[0].S2().String())
+		return
 	}
 
 	resultMove := strings.Split(mostVotedMove, "-")
@@ -163,7 +143,7 @@ func (g *Game) getChatMove() (string, string) {
 	moves := g.chessGame.ValidMoves()
 
 	for _, move := range moves {
-		if move.String() == resultMove[0] + resultMove[1] {
+		if move.String() == resultMove[0]+resultMove[1] {
 			fmt.Println("Chat making move " + resultMove[0] + "-" + resultMove[1])
 			g.chessGame.Move(move)
 			g.GameFen = g.chessGame.FEN()
@@ -171,7 +151,7 @@ func (g *Game) getChatMove() (string, string) {
 		}
 	}
 
-	return resultMove[0], resultMove[1]
+	g.wsSend("move=" + mostVotedMove)
 }
 
 func (g *Game) newChatMessage(message twitch.Message) {
@@ -191,4 +171,49 @@ func getGame(gameId string) (*Game, error) {
 		}
 	}
 	return new(Game), errors.New("Invalid game id")
+}
+
+func handleWebsocketConnection(c echo.Context) error {
+	websocket.Handler(func(ws *websocket.Conn) {
+		defer ws.Close()
+		var game *Game
+		for {
+			// Read
+			msg := ""
+			err := websocket.Message.Receive(ws, &msg)
+			if err != nil {
+				fmt.Println("WS conn closed" + err.Error())
+				return
+			}
+			if strings.HasPrefix(msg, "gameId=") {
+				splitStr := strings.Split(msg, "=")
+				game, err = getGame(splitStr[1])
+				if err != nil {
+					fmt.Println(err.Error())
+					continue
+				}
+				fmt.Printf("WS Connection registered on game %s", game.Id)
+				game.websocketConnection = ws
+			}
+			if game.websocketConnection != nil {
+				go game.handleWebsocketMessage(msg)
+			}
+
+		}
+	}).ServeHTTP(c.Response(), c.Request())
+	return nil
+}
+
+func (g *Game) handleWebsocketMessage(msg string) {
+	if strings.HasPrefix(msg, "move=") {
+		moveStr := strings.Replace(msg, "move=", "", 1)
+		positions := strings.Split(moveStr, "-")
+		g.makeMove(positions[0], positions[1])
+		time.AfterFunc(30*time.Second, g.sendChatMove)
+	}
+}
+
+func (g *Game) wsSend(msg string) {
+	fmt.Println("WS SEND " + msg)
+	websocket.Message.Send(g.websocketConnection, msg)
 }

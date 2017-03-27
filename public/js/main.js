@@ -32,28 +32,11 @@ var onDrop = function(source, target, piece) {
     // illegal move
     if (move === null) return 'snapback';
 
-    $.ajax({
-        method: "PUT",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        url: "/move/" + getCookie("gameId"),
-        data: JSON.stringify({from: source, to: target})
-    });
+    sendWS("move=" + source + "-" + target);
 
-    setTimeout(setEnemyMove, 30000);
+    startChatTimer();
 };
 
-
-function setEnemyMove() {
-    $.ajax({
-        method: "GET",
-        url: "/move/" + getCookie("gameId")
-    }).done(function(msg){
-        game.move({ from: msg.from, to: msg.to });
-        board.move(msg.from + "-" + msg.to);
-    });
-    $('.startGameBox').html('<h4 class="listenChannel"> </h4>');
-}
 
 var board = ChessBoard('board', {
     draggable: true,
@@ -66,21 +49,29 @@ board.start();
 
 // Start game
 var $startGameButton = $(".startGameButton");
+var $startGameInput = $(".channelName");
 
-$startGameButton.click(function () {
-    var $channelName = $(".channelName");
-
-    var channel = $channelName.val();
-    if (channel == "") {
-        $channelName.css("border-color", "red");
-        return
+$startGameButton.click(startUpGame);
+$startGameInput.keypress(function (e) {
+    if (e.which == 13) {
+        startUpGame();
+        return false;
     }
-    $channelName.fadeOut();
-    $startGameButton.fadeOut();
-
-    joinAndStart(channel)
 });
 
+
+function startUpGame() {
+    var channel = $startGameInput.val();
+    if (channel == "") {
+        $startGameInput.css("border-color", "red");
+        return
+    }
+    $startGameInput.fadeOut();
+    $startGameButton.fadeOut();
+    $('#board').css('display','block');
+
+    joinAndStart(channel);
+}
 
 function joinAndStart(channel) {
     $.ajax({
@@ -92,7 +83,7 @@ function joinAndStart(channel) {
     })
     .done(function(msg) {
         setCookie("gameId", msg.id, 1);
-        $('.startGameBox').html('<h4 class="listenChannel">Game has started</h4>');
+        initWS();
     });
 }
 

@@ -5,26 +5,40 @@ body {
 	background-image: url("/img/ep_naturalblack.png");
 }
 
-.title-text {
-	text-align: center;
-	margin: 2rem auto;
-	color: white;
-}
-
 #board {
+	display: none;
 	margin: 2rem auto;
 	position: absolute;
-	top: 200px;
+	top: 150px;
 	left: 0;
 	right: 0;
 }
 
-.startGameBox {
-	display: block;
-	width: 600px;
-	margin: 40px auto;
+.messageBox {
 	text-align: center;
+	margin: 60px auto;
+	font-size: 46px;
+	color: white;
 }
+
+.startGameBox {
+	position: absolute;
+	width: 250px;
+	left: 0;
+	right: 0;
+	top: 50%;
+	margin-top: -50px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.startGameBox input {
+	width: 250px;
+}
+.startGameBox button {
+	width: 250px;
+}
+
 
 .listenChannel {
 	color: white;
