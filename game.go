@@ -94,8 +94,8 @@ func (g *Game) makeMove(from, to string) {
 		if move.String() == from + to {
 
 			fmt.Println("Player making move " + from + "-" + to)
-			sayText := fmt.Sprintf("/me Twitch-Ches: Player made move %s-%s. Chat now has 30 Seconds to vote! Format: b7-b5", from, to)
-			fmt.Printf("[SAY][%s] %s", g.Channel, sayText)
+			sayText := fmt.Sprintf("/me Twitch-Chess: Player made move %s-%s. Chat now has 30 Seconds to vote! Format: b7-b5", from, to)
+			fmt.Printf("[SAY][%s] %s\r\n", g.Channel, sayText)
 
 			g.twitchClient.Say(g.Channel, sayText)
 			g.chessGame.Move(move)
@@ -109,6 +109,37 @@ func (g *Game) makeMove(from, to string) {
 
 func (g *Game) sendChatMove() {
 
+	mostVotedMove := g.getMostVotedValidMove()
+
+	if mostVotedMove == "" {
+		moves := g.chessGame.ValidMoves()
+		g.chessGame.Move(moves[0])
+		g.GameFen = g.chessGame.FEN()
+		g.moves = g.moves[:0]
+		fmt.Println("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
+		g.wsSend("move=" + moves[0].S1().String() + "-" + moves[0].S2().String())
+		return
+	}
+
+
+	resultMove := strings.Split(mostVotedMove, "-")
+
+	moves := g.chessGame.ValidMoves()
+
+	for _, move := range moves {
+		if move.String() == resultMove[0]+resultMove[1] {
+			fmt.Println("Chat making move " + resultMove[0] + "-" + resultMove[1])
+			g.chessGame.Move(move)
+			g.GameFen = g.chessGame.FEN()
+			g.moves = g.moves[:0]
+			g.wsSend("move=" + mostVotedMove)
+			return
+		}
+	}
+}
+
+// empty string is when there is no valid move
+func (g *Game) getMostVotedValidMove() string {
 	movesMap := make(map[string]int)
 
 	for _, move := range g.moves {
@@ -129,32 +160,32 @@ func (g *Game) sendChatMove() {
 		}
 	}
 	if mostVotedMove == "" {
-		moves := g.chessGame.ValidMoves()
-		g.chessGame.Move(moves[0])
-		g.GameFen = g.chessGame.FEN()
-		g.moves = g.moves[:0]
-		fmt.Println("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
-		g.wsSend("move=" + moves[0].S1().String() + "-" + moves[0].S2().String())
-		return
+		return mostVotedMove
 	}
+	g.removeMoveFromVotes(mostVotedMove)
 
 	resultMove := strings.Split(mostVotedMove, "-")
 
-	moves := g.chessGame.ValidMoves()
-
-	for _, move := range moves {
-		if move.String() == resultMove[0]+resultMove[1] {
-			fmt.Println("Chat making move " + resultMove[0] + "-" + resultMove[1])
-			g.chessGame.Move(move)
-			g.GameFen = g.chessGame.FEN()
-			g.moves = g.moves[:0]
+	for _, validMove := range g.chessGame.ValidMoves() {
+		if validMove.String() == resultMove[0]+resultMove[1] {
+			return mostVotedMove
 		}
 	}
+	return g.getMostVotedValidMove()
+}
 
-	g.wsSend("move=" + mostVotedMove)
+func (g *Game) removeMoveFromVotes(moveDel string) {
+	for i, move := range g.moves {
+		if move == moveDel {
+			g.moves = append(g.moves[:i], g.moves[i+1:]...)
+		}
+	}
 }
 
 func (g *Game) newChatMessage(message twitch.Message) {
+	if message.Channel == message.Username && message.Text == "chess" {
+		g.wsSend("valid")
+	}
 	if g.hasVoted(message.Username) {
 		return
 	}

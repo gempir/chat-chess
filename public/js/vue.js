@@ -6,6 +6,11 @@ var app = new Vue({
     }
 });
 
+function resetApp() {
+    app.message = "Twitch-Chess";
+    app.timer = '';
+}
+
 function startChatTimer() {
     app.message = "Chat is voting... ";
     var timer = null;
@@ -19,4 +24,8 @@ function startChatTimer() {
         }
         app.timer -= 1
     }, 1000)
+}
+
+function validateOwner() {
+    app.message = 'Type "chess" into your own chat for the game to start';
 }

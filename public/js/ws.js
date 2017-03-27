@@ -1,7 +1,7 @@
 var ws = null;
 
 function initWS() {
-    ws = new WebSocket('ws://chess.gempir.com/ws');
+    ws = new WebSocket('ws://localhost:1337/ws');
 
     ws.onopen = function () {
         ws.send("gameId=" + getCookie("gameId"));
@@ -19,7 +19,12 @@ function initWS() {
             game.move({ from: split2[0], to: split2[1] });
             board.move(split1[1]);
         }
-
+        if (e.data == "valid") {
+            $startGameInput.fadeOut();
+            $startGameButton.fadeOut();
+            $('#board').css('display','block');
+            resetApp();
+        }
     };
 }
 

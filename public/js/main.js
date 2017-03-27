@@ -66,9 +66,6 @@ function startUpGame() {
         $startGameInput.css("border-color", "red");
         return
     }
-    $startGameInput.fadeOut();
-    $startGameButton.fadeOut();
-    $('#board').css('display','block');
 
     joinAndStart(channel);
 }
@@ -84,6 +81,7 @@ function joinAndStart(channel) {
     .done(function(msg) {
         setCookie("gameId", msg.id, 1);
         initWS();
+        validateOwner();
     });
 }
 
