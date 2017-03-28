@@ -63,7 +63,6 @@ $startGameInput.keypress(function (e) {
 function startUpGame() {
     var channel = $startGameInput.val();
     if (channel == "") {
-        $startGameInput.css("border-color", "red");
         return
     }
 

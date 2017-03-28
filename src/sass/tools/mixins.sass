@@ -1,0 +1,73 @@
+=transition($length)
+  transition: all $length ease-in-out
+
+
+=googleShadow()
+    box-shadow: inset 1px 1px 0 rgba(0,0,0,.1),inset 0 -1px 0 rgba(0,0,0,.07)
+
+=materialShadow($level, $color, $opacity)
+  @if $level == 1
+    box-shadow: 0px 1px 1px 0px rgba($color, $opacity)
+  @else if $level == 2
+    box-shadow: 0px 1px 2px 0px rgba($color, $opacity)
+  @else if $level == 3
+    box-shadow: 0px 1px 3px 0px rgba($color, $opacity)
+  @else if $level == 4
+    box-shadow: 0px 1px 4px 0px rgba($color, $opacity)
+  @else if $level == 5
+    box-shadow: 0px 1px 5px 0px rgba($color, $opacity)
+
+=noSelect()
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -khtml-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+=noDrag()
+  -webkit-user-drag: none
+  -khtml-user-drag: none
+  -moz-user-drag: none
+  -o-user-drag: none
+  user-drag: none
+
+=absoluteCenter()
+  position: absolute
+  left: 50%
+  transform: translate(-50%, 0)
+
+=center($horizontal: true, $vertical: true)
+  position: absolute
+  @if ($horizontal and $vertical)
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+  @else if ($horizontal)
+    left: 50%
+    transform: translate(-50%, 0)
+  @else if ($vertical)
+    top: 50%
+    transform: translate(0, -50%)
+
+=bp-large
+  @media only screen and (max-width: 60em)
+    @content
+
+=bp-medium
+  @media only screen and (max-width: 40em)
+    @content
+
+=bp-small
+  @media only screen and (max-width: 30em)
+    @content
+
+
+=gradient-tile
+	background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%)
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(40%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65)))
+	background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,0.65) 100%)
+	background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,0.65) 100%)
+	background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,0.65) 100%)
+	background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,0.65) 100%)
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#a6000000',GradientType=0 )

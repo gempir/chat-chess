@@ -27,3 +27,5 @@ twitch-chess
 glide.lock
 vendor/
 config.go
+public/css/style.css
+node_modules/
