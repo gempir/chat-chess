@@ -27,7 +27,7 @@ type Game struct {
 	twitchClient        *twitch.Client
 	chessGame           *chess.Game
 	websocketConnection *websocket.Conn
-	moves               []string
+	moves               map[string]int
 	voters              []string
 }
 
@@ -75,18 +75,6 @@ func (g *Game) hasVoted(username string) bool {
 	return false
 }
 
-func handleStatusRequest(c echo.Context) error {
-	game, err := getGame(c.Param("gameid"))
-	if err != nil {
-		fmt.Println(err.Error())
-		return c.JSON(http.StatusNotFound, ErrorJson{
-			Error: err.Error(),
-		})
-	}
-
-	return c.JSON(http.StatusOK, game)
-}
-
 func (g *Game) makeMove(from, to string) {
 	moves := g.chessGame.ValidMoves()
 
@@ -101,7 +89,7 @@ func (g *Game) makeMove(from, to string) {
 			g.chessGame.Move(move)
 			g.GameFen = g.chessGame.FEN()
 			// reset voters
-			g.moves = g.moves[:0]
+			g.moves = make(map[string]int)
 			g.voters = g.voters[:0]
 		}
 	}
@@ -115,7 +103,7 @@ func (g *Game) sendChatMove() {
 		moves := g.chessGame.ValidMoves()
 		g.chessGame.Move(moves[0])
 		g.GameFen = g.chessGame.FEN()
-		g.moves = g.moves[:0]
+		g.moves = make(map[string]int)
 		fmt.Println("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
 		g.wsSend("move=" + moves[0].S1().String() + "-" + moves[0].S2().String())
 		return
@@ -131,7 +119,7 @@ func (g *Game) sendChatMove() {
 			fmt.Println("Chat making move " + resultMove[0] + "-" + resultMove[1])
 			g.chessGame.Move(move)
 			g.GameFen = g.chessGame.FEN()
-			g.moves = g.moves[:0]
+			g.moves = make(map[string]int)
 			g.wsSend("move=" + mostVotedMove)
 			return
 		}
@@ -140,51 +128,40 @@ func (g *Game) sendChatMove() {
 
 // empty string is when there is no valid move
 func (g *Game) getMostVotedValidMove() string {
-	movesMap := make(map[string]int)
 
-	for _, move := range g.moves {
-		if val, ok := movesMap[move]; ok {
-			movesMap[move] = val + 1
-		} else {
-			movesMap[move] = 1
-		}
-	}
 
-	mostVotedMove := ""
+	mostVoted := ""
 	mostVotes := 0
-	for move, count := range movesMap {
+	for move, count := range g.moves {
 		if count > mostVotes {
-			mostVotedMove = move
+			mostVoted = move
 			mostVotes = count
-			continue
+			delete(g.moves, move)
 		}
 	}
-	if mostVotedMove == "" {
-		return mostVotedMove
-	}
-	//g.removeMoveFromVotes(mostVotedMove)
 
-	resultMove := strings.Split(mostVotedMove, "-")
-
-	for _, validMove := range g.chessGame.ValidMoves() {
-		if validMove.String() == resultMove[0]+resultMove[1] {
-			return mostVotedMove
-		}
+	if mostVoted == "" {
+		return mostVoted
 	}
-	return "" //@TODO fix the deletion from slice so it can fetch the next most voted move
+
+	moveSplit := strings.Split(mostVoted, "-")
+
+	if g.isValidMove(moveSplit[0], moveSplit[1]) {
+		return mostVoted
+	}
+
+	return g.getMostVotedValidMove()
 }
 
-func (g *Game) removeMoveFromVotes(moveDel string) {
-	for i, move := range g.moves {
-		if move == moveDel {
-			if len(g.moves) == 1 {
-				g.moves = g.moves[:0]
-				return
-			}
-			g.moves = append(g.moves[:i], g.moves[i+1:]...)
+func (g *Game) isValidMove(from, to string) bool {
+	for _,move := range g.chessGame.ValidMoves() {
+		if move.String() == from + to {
+			return true
 		}
 	}
+	return false
 }
+
 
 func (g *Game) newChatMessage(message twitch.Message) {
 	if message.Channel == message.Username && message.Text == "chess" {
@@ -194,8 +171,13 @@ func (g *Game) newChatMessage(message twitch.Message) {
 		return
 	}
 	if regResult := MoveRegex.FindAllString(message.Text, 1); len(regResult) > 0 {
-		g.moves = append(g.moves, regResult[0])
-		return
+		g.voters = append(g.voters, message.Username)
+		if _, ok := g.moves[regResult[0]]; ok {
+			g.moves[regResult[0]] += 1
+		} else {
+			g.moves[regResult[0]] = 1
+		}
+
 	}
 }
 
@@ -249,6 +231,9 @@ func (g *Game) handleWebsocketMessage(msg string) {
 }
 
 func (g *Game) wsSend(msg string) {
+	if g.websocketConnection == nil {
+		return
+	}
 	fmt.Println("WS SEND " + msg)
 	websocket.Message.Send(g.websocketConnection, msg)
 }
