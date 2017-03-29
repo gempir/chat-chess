@@ -1,7 +1,11 @@
 var ws = null;
 
 function initWS() {
-    ws = new WebSocket('wss://chess.gempir.com/ws');
+    var protocol = "ws";
+    if (location.protocol === 'https:') {
+        protocol = "wss"
+    }
+    ws = new WebSocket(protocol +"://" + location.host + "/ws");
 
     ws.onopen = function () {
         ws.send("gameId=" + getCookie("gameId"));

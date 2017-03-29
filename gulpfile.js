@@ -1,10 +1,13 @@
-var gulp        = require('gulp');
-var sass        = require('gulp-sass');
-var cssnano     = require('gulp-cssnano');
-
+const gulp        = require('gulp');
+const sass        = require('gulp-sass');
+const cssnano     = require('gulp-cssnano');
+const babel       = require('gulp-babel');
+const concat      = require('gulp-concat');
+const uglify      = require('gulp-uglify');
 
 gulp.task('watch', function() {
     gulp.watch("src/sass/**/*.sass", ['sass'])
+    gulp.watch("src/js/**/*.js", ['transpile'])
 });
 
 gulp.task('sass', function() {
@@ -14,4 +17,18 @@ gulp.task('sass', function() {
         .pipe(gulp.dest("public/css"))
 });
 
-gulp.task('build', ['sass']);
+
+
+gulp.task('transpile', function() {
+    gulp.src('src/js/**/*.js')
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(concat('main.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('public/js/'));
+});
+
+
+
+gulp.task('build', ['sass','transpile']);

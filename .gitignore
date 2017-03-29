@@ -28,4 +28,5 @@ glide.lock
 vendor/
 config.go
 public/css/style.css
+public/js/main.js
 node_modules/
