@@ -50,6 +50,7 @@ func startGame(c echo.Context) error {
 	game.twitchClient = twitch.NewClient(botusername, botoauth)
 	game.chessGame = chess.NewGame()
 	game.GameFen = game.chessGame.FEN()
+	game.moves = make(map[string]int)
 
 	fmt.Println("Starting New Game Id: " + game.Id + ", Channel: " + game.Channel)
 

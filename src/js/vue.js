@@ -17,7 +17,7 @@ function startChatTimer() {
     app.timer = 29;
 
     timer = setInterval(function() {
-        if(app.timer == 0) {
+        if(app.timer === 0) {
             app.timer = '';
             return clearInterval(timer)
         }
