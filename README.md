@@ -1,7 +1,6 @@
 # Twitch-Chess
 
-Twitch-Chess is available at [https://chess.gempir.com/](https://chess.gempir.com) 
-If you have problems you can contact me on [twitch.tv/gempir](https://twitch.tv/gempir) or [twitter.com/gempir](https://twitter.com/gempir)
+A chess game in which you play against your twitch chat. 
 
 ## How It works
 
