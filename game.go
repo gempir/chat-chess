@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/gempir/go-twitch-irc"
 	"github.com/labstack/echo"
 	"github.com/notnil/chess"
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
 	"golang.org/x/net/websocket"
-	"net/http"
-	"regexp"
-	"strings"
-	"time"
 )
 
 var (
@@ -80,7 +81,7 @@ func (g *Game) makeMove(from, to string) {
 	moves := g.chessGame.ValidMoves()
 
 	for _, move := range moves {
-		if move.String() == from + to {
+		if move.String() == from+to {
 
 			fmt.Println("Player making move " + from + "-" + to)
 			sayText := fmt.Sprintf("/me Twitch-Chess: Player made move %s-%s. Chat now has 30 Seconds to vote! Format: b7-b5", from, to)
@@ -110,7 +111,6 @@ func (g *Game) sendChatMove() {
 		return
 	}
 
-
 	resultMove := strings.Split(mostVotedMove, "-")
 
 	moves := g.chessGame.ValidMoves()
@@ -129,7 +129,6 @@ func (g *Game) sendChatMove() {
 
 // empty string is when there is no valid move
 func (g *Game) getMostVotedValidMove() string {
-
 
 	mostVoted := ""
 	mostVotes := 0
@@ -155,24 +154,23 @@ func (g *Game) getMostVotedValidMove() string {
 }
 
 func (g *Game) isValidMove(from, to string) bool {
-	for _,move := range g.chessGame.ValidMoves() {
-		if move.String() == from + to {
+	for _, move := range g.chessGame.ValidMoves() {
+		if move.String() == from+to {
 			return true
 		}
 	}
 	return false
 }
 
-
-func (g *Game) newChatMessage(message twitch.Message) {
-	if message.Channel == message.Username && message.Text == "chess" {
+func (g *Game) newChatMessage(channel string, user twitch.User, message twitch.Message) {
+	if channel == user.Username && message.Text == "chess" {
 		g.wsSend("valid")
 	}
-	if g.hasVoted(message.Username) {
+	if g.hasVoted(user.Username) {
 		return
 	}
 	if regResult := MoveRegex.FindAllString(message.Text, 1); len(regResult) > 0 {
-		g.voters = append(g.voters, message.Username)
+		g.voters = append(g.voters, user.Username)
 		if _, ok := g.moves[regResult[0]]; ok {
 			g.moves[regResult[0]] += 1
 		} else {
