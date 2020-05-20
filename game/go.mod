@@ -1,4 +1,4 @@
-module github.com/gempir/twitch-chess
+module github.com/gempir/twitch-chess/game
 
 go 1.13
 
@@ -9,6 +9,4 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xid v1.2.1
 	github.com/sirupsen/logrus v1.6.0
-	github.com/stretchr/testify v1.4.0 // indirect
-	golang.org/x/sys v0.0.0-20200519105757-fe76b779f299 // indirect
 )
