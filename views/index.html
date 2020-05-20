@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Twitch-Chess</title>
     <meta charset="utf-8">
@@ -9,25 +10,30 @@
     <link rel="stylesheet" type="text/css" href="/css/chessboard-0.3.0.min.css">
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
     <script type="text/javascript" src="js/chessboard-0.3.0.min.js"></script>
     <script src="https://unpkg.com/vue"></script>
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
+
 <body>
 
-<div class="messageBox">
-    {{ message }} {{ timer }}
-</div>
-<div class="startGameBox">
-    <input class="channelName" type="text" placeholder="Channel"><br>
-    <button class="button-primary startGameButton">Join Channel & Start Game</button>
-</div>
-<div id="board" style="width: 600px"></div>
-<script type="text/javascript" src="js/main.js"></script>
-<script type="text/javascript" id="cookiebanner" src="https://cdnjs.cloudflare.com/ajax/libs/cookie-banner/1.0.0/cookiebanner.min.js"></script>
+    <div class="messageBox">
+        {{ message }} {{ timer }}
+    </div>
+    <div class="startGameBox">
+        <input class="channelName" type="text" placeholder="Channel"><br>
+        <button class="button-primary startGameButton">Join Channel & Start Game</button>
+    </div>
+    <div id="board" style="width: 600px"></div>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="js/ws.js"></script>
 </body>
+
 </html>

@@ -1,6 +1,0 @@
-package main
-
-var (
-	botusername = "asd"
-	botoauth = "oauth:asdasdadasdd123"
-)

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gempir/go-twitch-irc"
+	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/labstack/echo"
 	"github.com/notnil/chess"
 	"github.com/pkg/errors"
@@ -48,14 +48,14 @@ func startGame(c echo.Context) error {
 	game := new(Game)
 	c.Bind(game)
 	game.Id = xid.New().String()
-	game.twitchClient = twitch.NewClient(botusername, botoauth)
+	game.twitchClient = twitch.NewAnonymousClient()
 	game.chessGame = chess.NewGame()
 	game.GameFen = game.chessGame.FEN()
 	game.moves = make(map[string]int)
 
 	fmt.Println("Starting New Game Id: " + game.Id + ", Channel: " + game.Channel)
 
-	go game.twitchClient.OnNewMessage(game.newChatMessage)
+	go game.twitchClient.OnPrivateMessage(game.newChatMessage)
 	go game.twitchClient.Connect()
 	go game.joinChannel()
 
@@ -162,15 +162,15 @@ func (g *Game) isValidMove(from, to string) bool {
 	return false
 }
 
-func (g *Game) newChatMessage(channel string, user twitch.User, message twitch.Message) {
-	if channel == user.Username && message.Text == "chess" {
+func (g *Game) newChatMessage(message twitch.PrivateMessage) {
+	if message.Channel == message.User.Name && message.Message == "chess" {
 		g.wsSend("valid")
 	}
-	if g.hasVoted(user.Username) {
+	if g.hasVoted(message.User.Name) {
 		return
 	}
-	if regResult := MoveRegex.FindAllString(message.Text, 1); len(regResult) > 0 {
-		g.voters = append(g.voters, user.Username)
+	if regResult := MoveRegex.FindAllString(message.Message, 1); len(regResult) > 0 {
+		g.voters = append(g.voters, message.User.Name)
 		if _, ok := g.moves[regResult[0]]; ok {
 			g.moves[regResult[0]] += 1
 		} else {
