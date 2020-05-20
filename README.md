@@ -12,7 +12,3 @@ Once you make a move, my bot will write into your chat instructing your chat to 
 a move like (b7-b5). 
 The most voted and valid move will be executed, if no valid votes were made, the bot will
 make a random move. 
-
-### Screenshot
-
-![http://i.imgur.com/dtcXUNd.png](http://i.imgur.com/dtcXUNd.png)
