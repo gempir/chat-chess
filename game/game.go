@@ -270,7 +270,6 @@ func (g *Game) wsSend(msg interface{}) {
 	if g.websocketConnection == nil {
 		return
 	}
-
 	// g.logInfo(fmt.Sprintf("WS SEND %v", msg))
 	g.websocketConnection.WriteJSON(msg)
 }
