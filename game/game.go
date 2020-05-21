@@ -11,17 +11,19 @@ import (
 	"github.com/notnil/chess"
 	"github.com/pkg/errors"
 	"github.com/rs/xid"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
-	Games     []*Game
-	MoveRegex = regexp.MustCompile(`(?i)^([a-h])([1-8])-([a-h])([1-8])`)
+	games     []*Game
+	moveRegex = regexp.MustCompile(`(?i)^([a-h])([1-8])-([a-h])([1-8])`)
 )
 
+// Game contains entire game with connected channel
 type Game struct {
-	Id                  string `json:"id"`
-	Channel             string `json:"channel"`
-	GameFen             string `json:"game_fen"`
+	ID                  string
+	Channel             string
+	GameFen             string
 	messages            chan string
 	twitchClient        *twitch.Client
 	chessGame           *chess.Game
@@ -42,22 +44,25 @@ type ErrorJson struct {
 	Error string `json:"error_message"`
 }
 
-func startGame(channel string) *Game {
+func startGame(channel string, ws *websocket.Conn) *Game {
 	game := new(Game)
+	game.websocketConnection = ws
 	game.Channel = channel
-	game.Id = xid.New().String()
+	game.ID = xid.New().String()
 	game.twitchClient = twitch.NewAnonymousClient()
 	game.chessGame = chess.NewGame()
 	game.GameFen = game.chessGame.FEN()
 	game.moves = make(map[string]int)
 
-	fmt.Println("Starting New Game Id: " + game.Id + ", Channel: " + game.Channel)
+	game.logInfo("Starting New Game")
 
 	go game.twitchClient.OnPrivateMessage(game.newChatMessage)
 	go game.twitchClient.Connect()
 	go game.joinChannel()
 
-	Games = append(Games, game)
+	game.wsSend(&gameMessage{"game", game})
+
+	games = append(games, game)
 
 	return game
 }
@@ -81,11 +86,7 @@ func (g *Game) makeMove(from, to string) {
 	for _, move := range moves {
 		if move.String() == from+to {
 
-			fmt.Println("Player making move " + from + "-" + to)
-			sayText := fmt.Sprintf("/me Twitch-Chess: Player made move %s-%s. Chat now has 30 Seconds to vote! Format: b7-b5", from, to)
-			fmt.Printf("[SAY][%s] %s\r\n", g.Channel, sayText)
-
-			g.twitchClient.Say(g.Channel, sayText)
+			g.logInfo("Player making move " + from + "-" + to)
 			g.chessGame.Move(move)
 			g.GameFen = g.chessGame.FEN()
 			// reset voters
@@ -93,6 +94,14 @@ func (g *Game) makeMove(from, to string) {
 			g.voters = g.voters[:0]
 		}
 	}
+}
+
+func (g *Game) logInfo(msg string) {
+	log.Infof("[%s][%s] %s", g.Channel, g.ID, msg)
+}
+
+func (g *Game) logError(msg string) {
+	log.Errorf("[%s][%s] %s", g.Channel, g.ID, msg)
 }
 
 func (g *Game) sendChatMove() {
@@ -104,8 +113,8 @@ func (g *Game) sendChatMove() {
 		g.chessGame.Move(moves[0])
 		g.GameFen = g.chessGame.FEN()
 		g.moves = make(map[string]int)
-		fmt.Println("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
-		g.wsSend("move=" + moves[0].S1().String() + "-" + moves[0].S2().String())
+		g.logInfo("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
+		g.wsSend(&gameMessage{"move", moves[0].S1().String() + "-" + moves[0].S2().String()})
 		return
 	}
 
@@ -115,7 +124,7 @@ func (g *Game) sendChatMove() {
 
 	for _, move := range moves {
 		if move.String() == resultMove[0]+resultMove[1] {
-			fmt.Println("Chat making move " + resultMove[0] + "-" + resultMove[1])
+			g.logInfo("Chat making move " + resultMove[0] + "-" + resultMove[1])
 			g.chessGame.Move(move)
 			g.GameFen = g.chessGame.FEN()
 			g.moves = make(map[string]int)
@@ -161,16 +170,13 @@ func (g *Game) isValidMove(from, to string) bool {
 }
 
 func (g *Game) newChatMessage(message twitch.PrivateMessage) {
-	if message.Channel == message.User.Name && message.Message == "chess" {
-		g.wsSend("valid")
-	}
 	if g.hasVoted(message.User.Name) {
 		return
 	}
-	if regResult := MoveRegex.FindAllString(message.Message, 1); len(regResult) > 0 {
+	if regResult := moveRegex.FindAllString(message.Message, 1); len(regResult) > 0 {
 		g.voters = append(g.voters, message.User.Name)
 		if _, ok := g.moves[regResult[0]]; ok {
-			g.moves[regResult[0]] += 1
+			g.moves[regResult[0]]++
 		} else {
 			g.moves[regResult[0]] = 1
 		}
@@ -178,9 +184,9 @@ func (g *Game) newChatMessage(message twitch.PrivateMessage) {
 	}
 }
 
-func getGame(gameId string) (*Game, error) {
-	for _, game := range Games {
-		if game.Id == gameId {
+func getGame(gameID string) (*Game, error) {
+	for _, game := range games {
+		if game.ID == gameID {
 			return game, nil
 		}
 	}
@@ -189,16 +195,17 @@ func getGame(gameId string) (*Game, error) {
 
 func (g *Game) handleWebsocketMessage(msg gameMessage) {
 	if msg.Type == "move" {
-		positions := strings.Split(msg.Value, "-")
+		positions := strings.Split(fmt.Sprintf("%v", msg.Value), "-")
 		g.makeMove(positions[0], positions[1])
 		time.AfterFunc(30*time.Second, g.sendChatMove)
 	}
 }
 
-func (g *Game) wsSend(msg string) {
+func (g *Game) wsSend(msg interface{}) {
 	if g.websocketConnection == nil {
 		return
 	}
-	fmt.Println("WS SEND " + msg)
-	// websocket.Message.Send(g.websocketConnection, msg)
+
+	g.logInfo(fmt.Sprintf("WS SEND %v", msg))
+	g.websocketConnection.WriteJSON(msg)
 }

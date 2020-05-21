@@ -5,6 +5,7 @@ export default class EventService {
             this.ws = new WebSocket(`${apiBaseUrl.replace("https://", "wss://").replace("http://", "ws://")}/api/ws`);
             
             this.ws.onmessage = (event) => {
+                console.log(event.data);
                 callback(JSON.parse(event.data));
             };
 

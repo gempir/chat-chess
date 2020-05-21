@@ -12,22 +12,23 @@ var clients = make(map[*websocket.Conn]bool) // connected clients
 var upgrader = websocket.Upgrader{}
 
 func main() {
+	log.SetLevel(log.DebugLevel)
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return true
 	}
 
 	http.HandleFunc("/api/ws", handleConnections)
 
+	log.Info("[api] listening on port :8060")
 	err := http.ListenAndServe(":8060", nil)
-	log.Info("[api] listening on port :8035")
 	if err != nil {
 		log.Fatal("[api] listenAndServe: ", err)
 	}
 }
 
 type gameMessage struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
+	Type  string      `json:"type"`
+	Value interface{} `json:"value"`
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -51,10 +52,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if msg.Type == "start" {
-			game = startGame(msg.Value)
-
-			fmt.Printf("WS Connection registered on game %s", game.Id)
-			game.websocketConnection = ws
+			game = startGame(fmt.Sprintf("%v", msg.Value), ws)
 		}
 		if game.websocketConnection != nil {
 			go game.handleWebsocketMessage(msg)
