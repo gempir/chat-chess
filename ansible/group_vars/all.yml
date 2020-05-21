@@ -1,5 +1,5 @@
 ---
-bot_host: chess-api.gempir.com
+game_host: chess-api.gempir.com
 web_host: chess.gempir.com
 email: !vault |
           $ANSIBLE_VAULT;1.1;AES256
