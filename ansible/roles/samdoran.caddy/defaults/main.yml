@@ -1,0 +1,26 @@
+caddy_user: caddy
+caddy_group: caddy
+caddy_service_name: caddy
+caddy_default_port: 80
+caddy_log_path: /var/log/caddy
+caddy_config_path: /etc/caddy
+caddy_config_file: caddy.conf
+caddy_root: /usr/share/caddy
+caddy_force_update: no
+caddy_download_custom_build: no
+caddy_license_type: personal
+caddy_version: '1.0.0'
+caddy_plugins:
+  - http.cache
+  - http.cgi
+  - http.forwardproxy
+  - http.geoip
+  - http.realip
+  - tls.dns.cloudflare
+  - tls.dns.digitalocean
+  - tls.dns.namecheap
+  - tls.dns.route53
+
+# SystemD unit file settings
+caddy_systemd_protect_home: 'true'
+caddy_systemd_protect_system: 'full'

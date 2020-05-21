@@ -1,0 +1,27 @@
+[Unit]
+Description=Caddy HTTP/2 web server
+Documentation=https://caddyserver.com/docs
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Restart=on-failure
+StartLimitInterval=86400
+StartLimitBurst=5
+User={{ caddy_user }}
+Group={{ caddy_group }}
+Environment=CADDYPATH={{ caddy_ssl_path }}
+ExecStartPre=/usr/local/bin/caddy -conf={{ caddy_config_path }}/{{ caddy_config_file }} -validate
+ExecStart=/usr/local/bin/caddy -log={{ caddy_log_path }}/caddy.log -agree=true -conf={{ caddy_config_path }}/{{ caddy_config_file }} -root={{ caddy_root }}
+ExecReload=/bin/kill -USR1 $MAINPID
+LimitNOFILE=1048576
+LimitNPROC=64
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome={{ caddy_systemd_protect_home }}
+ProtectSystem={{ caddy_systemd_protect_system }}
+ReadWriteDirectories={{ caddy_ssl_path }}
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,44 @@
+name: Provision
+
+on:
+  issues:
+    types: [opened,edited]
+
+jobs:
+  Provision:
+    name: Provision
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.issue.title, 'provision')
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup SSH
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_KEY: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          mkdir ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          touch ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_rsa
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible==2.9.2 requests
+
+      - name: set ansible config secrets
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_PASS }}
+        run: |
+          echo "$ANSIBLE_VAULT_PASSWORD" > .ansible-vault-password
+      - name: run playbook
+        run: |
+          ansible-playbook -i ansible/hosts ansible/playbook.yml --vault-password-file .ansible-vault-password

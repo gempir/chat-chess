@@ -1,0 +1,6 @@
+:{{ caddy_default_port }} {
+    gzip
+    root {{ caddy_root }}
+}
+
+import conf.d/*.conf

@@ -1,0 +1,176 @@
+- name: Remove Caddy files in order to update
+  file:
+    path: "{{ item }}"
+    state: absent
+  when: caddy_force_update | bool
+  loop:
+    - /usr/local/bin/caddy
+    - /var/tmp/caddy/caddy
+  tags:
+    - caddy
+
+- name: See if Caddy binary exists
+  stat:
+    path: /usr/local/bin/caddy
+  register: caddy_bin
+  tags:
+    - caddy
+
+- name: Create Caddy archive extraction path
+  file:
+    path: /var/tmp/caddy
+    state: directory
+  tags:
+    - caddy
+
+- block:
+    - name: Download custom Caddy archive
+      get_url:
+        url: https://caddyserver.com/download/{{ _platform }}/{{ _architecture }}?plugins={{ _plugins }}&license={{ caddy_license_type }}&telemetry=off
+        dest: /var/tmp
+        timeout: 480
+      when: caddy_download_custom_build | bool
+  rescue:
+    - name: Download baked Caddy archive
+      get_url:
+        url: https://github.com/mholt/caddy/releases/download/v{{ caddy_version }}/caddy_v{{ caddy_version }}_{{ _platform }}_{{ _architecture }}.tar.gz
+        dest: /var/tmp
+        timeout: 480
+  always:
+    - name: Download baked Caddy archive
+      get_url:
+        url: https://github.com/mholt/caddy/releases/download/v{{ caddy_version }}/caddy_v{{ caddy_version }}_{{ _platform }}_{{ _architecture }}.tar.gz
+        dest: /var/tmp
+        timeout: 480
+      when: not caddy_download_custom_build
+  when: not caddy_bin.stat.exists
+  tags:
+    - caddy
+
+- name: Find the downloaded Caddy archive file
+  find:
+    paths: /var/tmp/
+    patterns: 'caddy*tar.gz'
+  register: caddy_archive
+  tags:
+    - caddy
+
+- name: Extract Caddy archive
+  unarchive:
+    dest: /var/tmp/caddy
+    src: "{{ caddy_archive.files | map(attribute='path') | list | first }}"
+    creates: /var/tmp/caddy/caddy
+    remote_src: yes
+  when:
+    caddy_archive.matched > 0 or
+    caddy_force_update
+  tags:
+    - caddy
+
+- name: Copy Caddy binary into place
+  script: copy-caddy-bin.sh
+  args:
+    creates: /usr/local/bin/caddy
+  notify:
+    - restart caddy
+    - systemd daemon reload
+  tags:
+    - caddy
+
+- name: Create Caddy group
+  group:
+    name: caddy
+    system: yes
+  tags:
+    - caddy
+
+- name: Create Caddy user
+  user:
+    name: caddy
+    system: yes
+  tags:
+    - caddy
+
+- name: Create Caddy directories
+  file:
+    path: "{{ item.path | default(item) }}"
+    owner: "{{ caddy_user }}"
+    group: "{{ caddy_group }}"
+    mode: "{{ item.mode | default(omit) }}"
+    state: directory
+  loop:
+    - "{{ caddy_config_path }}/conf.d"
+    - "{{ caddy_ssl_path }}"
+    - "{{ caddy_log_path }}"
+    - "{{ caddy_root }}"
+  tags:
+    - caddy
+
+- name: Copy service file
+  template:
+    src: "{{ caddy_service_files[ansible_facts.service_mgr]['src'] }}"
+    dest: "{{ caddy_service_files[ansible_facts.service_mgr]['dest'] }}"
+  register: service_file_task
+  notify:
+    - systemd daemon reload
+    - restart caddy
+  tags:
+    - caddy
+
+- name: SystemD daemon reload
+  systemd:
+    daemon_reload: yes
+  when:
+    - service_file_task is changed
+    - ansible_facts.service_mgr == 'systemd'
+  tags:
+    - caddy
+
+- name: Copy default index.html
+  copy:
+    src: index.html
+    dest: "{{ caddy_root }}"
+    owner: "{{ caddy_user }}"
+    group: "{{ caddy_group }}"
+  tags:
+    - caddy
+
+- name: DEBIAN | Set capabilities
+  capabilities:
+    path: /usr/local/bin/caddy
+    capability: cap_net_bind_service+ep
+    state: present
+  when: ansible_facts.os_family == 'Debian'
+  tags:
+    - caddy
+
+- name: Create log dir
+  file:
+    path: "{{ caddy_log_path }}"
+    state: directory
+    owner: "{{ caddy_user }}"
+    group: "{{ caddy_group }}"
+    mode: '0750'
+  tags:
+    - caddy
+
+- name: Copy main Caddy config
+  template:
+    src: caddy.conf.j2
+    dest: "{{ caddy_config_path }}/{{ caddy_config_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - caddy
+    - caddy_config
+
+- name: Start and enable Caddy
+  service:
+    name: "{{ caddy_service_name }}"
+    state: started
+    enabled: yes
+  register: service_start
+  tags:
+    - caddy
+    - caddy_service

@@ -1,0 +1,16 @@
+- name: systemd daemon reload
+  systemd:
+    daemon_reload: yes
+  when: "ansible_facts['service_mgr'] == 'systemd'"
+
+- name: restart caddy
+  service:
+    name: "{{ caddy_service_name }}"
+    state: restarted
+  when: service_start | default({}) is not changed
+
+- name: reload caddy
+  service:
+    name: "{{ caddy_service_name }}"
+    state: reloaded
+  when: service_start | default({}) is not changed

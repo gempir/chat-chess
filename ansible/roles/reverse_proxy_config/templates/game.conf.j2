@@ -1,0 +1,6 @@
+chess-api.gempir.com {
+    proxy / localhost:8060 {
+        websocket
+        header_upstream -Origin
+    }
+}

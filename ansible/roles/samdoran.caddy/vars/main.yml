@@ -1,0 +1,23 @@
+caddy_url_values:
+  platform:
+    linux: linux
+    macosx: darwin
+  architecture:
+    x86_64: 'amd64'
+    i386: '386'
+    armv7l: arm7
+
+caddy_service_files:
+  systemd:
+    src: caddy.service.systemd.j2
+    dest: /lib/systemd/system/caddy.service
+  upstart:
+    src: caddy.conf.upstart.j2
+    dest: /etc/init/caddy.conf
+  init:
+    src: caddy.sysvinit.j2
+    dest: /etc/init.d/caddy
+
+_platform: "{{ ansible_facts['system'] | lower }}"
+_architecture: "{{ caddy_url_values['architecture'][ansible_facts['architecture']] }}"
+_plugins: "{% for option in caddy_plugins %}{{ option }}{% if not loop.last %},{% endif %}{% endfor %}"

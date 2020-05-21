@@ -1,0 +1,28 @@
+galaxy_info:
+  role_name: caddy
+  author: Sam Doran
+  description: Install and manage Caddy natively or in a container
+  company: Ansible by Red Hat
+  license: Apache 2.0
+  min_ansible_version: 2.7
+
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+
+    - name: Debian
+      versions:
+        - stretch
+        - jessie
+
+  galaxy_tags:
+    - system
+
+dependencies: []
