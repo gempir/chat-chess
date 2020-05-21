@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -59,6 +60,7 @@ func startGame(channel string, ws *websocket.Conn) *Game {
 	go game.twitchClient.OnPrivateMessage(game.newChatMessage)
 	go game.twitchClient.Connect()
 	go game.joinChannel()
+	go game.startVotedBroadcast()
 
 	game.sendGameUpdate()
 	games = append(games, game)
@@ -66,8 +68,53 @@ func startGame(channel string, ws *websocket.Conn) *Game {
 	return game
 }
 
+func (g *Game) startVotedBroadcast() {
+	ticker := time.NewTicker(1 * time.Second)
+
+	for range ticker.C {
+		vts := []vote{}
+
+		for move, count := range g.moves {
+			vts = append(vts, vote{move, count})
+		}
+
+		result := votes{vts}
+		result.sort()
+
+		g.sendVotes(result)
+	}
+}
+
 func (g *Game) sendGameUpdate() {
 	g.wsSend(&gameMessage{"game", g})
+}
+
+type vote struct {
+	Move  string
+	Votes int
+}
+
+type votes struct {
+	Votes []vote
+}
+
+func (v *votes) sort() {
+	vts := v.Votes
+	sort.SliceStable(vts, func(i, j int) bool {
+		return vts[i].Votes > vts[j].Votes
+	})
+
+	v.Votes = vts
+}
+
+func (g *Game) sendVotes(vts votes) {
+	if len(vts.Votes) > 0 {
+		g.wsSend(&gameMessage{"votes", vts})
+	}
+}
+
+func (g *Game) sendClearVotes() {
+	g.wsSend(&gameMessage{"votes", votes{[]vote{}}})
 }
 
 type action struct {
@@ -130,6 +177,7 @@ func (g *Game) sendChatMove() {
 		g.logInfo("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
 		g.sendAction("[Chat:Auto] " + moves[0].S1().String() + "-" + moves[0].S2().String())
 		g.sendGameUpdate()
+		g.sendClearVotes()
 		return
 	}
 
@@ -145,6 +193,7 @@ func (g *Game) sendChatMove() {
 			g.moves = make(map[string]int)
 			g.sendGameUpdate()
 			g.sendAction("[Chat] " + resultMove[0] + "-" + resultMove[1])
+			g.sendClearVotes()
 			return
 		}
 	}
@@ -222,6 +271,6 @@ func (g *Game) wsSend(msg interface{}) {
 		return
 	}
 
-	g.logInfo(fmt.Sprintf("WS SEND %v", msg))
+	// g.logInfo(fmt.Sprintf("WS SEND %v", msg))
 	g.websocketConnection.WriteJSON(msg)
 }

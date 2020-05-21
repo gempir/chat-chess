@@ -7,6 +7,7 @@ export default class Base extends React.Component {
     state = {
         game: null,
         actions: [],
+        votes: [],
     }
 
     componentDidMount() {
@@ -29,6 +30,11 @@ export default class Base extends React.Component {
                         <li key={action.ID}>{this.formatTime(action.Time)} <strong>{action.Message}</strong></li>
                     )}
                 </ul>
+                <ol className="votes">
+                    {this.state.votes.map((vote, key) =>
+                        <li key={key}><strong>{vote.Move}</strong> {vote.Votes}</li>
+                    )}
+                </ol>
                 {this.state.game && <div>
                     <div className="topMessage">playing against #{this.state.game.Channel}</div>
                     <Game fen={this.state.game.GameFen} eventService={this.eventService} />
@@ -70,6 +76,11 @@ export default class Base extends React.Component {
             case "action":
                 this.setState({
                     actions: [...this.state.actions, data.value],
+                });
+                break;
+            case "votes":
+                this.setState({
+                    votes: data.value.Votes,
                 });
                 break;
         }

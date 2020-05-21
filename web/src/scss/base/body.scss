@@ -25,8 +25,33 @@ body {
         position: absolute;
         left: 20px;
         top: 20px;
+        width: 400px;
         bottom: 50px;
+        overflow: scroll;
         padding: 0;
+        color: var(--weakText);
+
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+    
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: var(--lightBorder);
+        }
+
+        &::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+    }
+
+    .votes {
+        margin: 0;
+        position: absolute;
+        right: 50px;
+        font-size: 2rem;
+        top: 20px;
+        bottom: 50px;
         overflow: scroll;
         color: var(--weakText);
 

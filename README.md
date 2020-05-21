@@ -5,10 +5,9 @@ A chess game in which you play against your twitch chat.
 ## How It works
 
 1. Enter your channel name (like "gempir")
-2. Type "chess" into your own chat, to confirm you are owner of this channel
-3. Start playing as the white player
+2. Start playing as the white player
+3. Once you made a move, the bot will look for the most popular move in your chat in the next X seconds. 
+4. If no votes were cast in chat, then the bot will execute a random move
 
-Once you make a move, my bot will write into your chat instructing your chat to vote for
-a move like (b7-b5). 
-The most voted and valid move will be executed, if no valid votes were made, the bot will
-make a random move. 
+#### Move Sytax
+`b7-b5`
