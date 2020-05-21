@@ -23,7 +23,7 @@ export default class EventService {
         this.connect();
     }
 
-    sendMessage(message) {
+    send(message) {
         this.ws.send(JSON.stringify(message));
     }
 }

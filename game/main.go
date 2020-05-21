@@ -55,6 +55,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			game = startGame(fmt.Sprintf("%v", msg.Value), ws)
 		}
 		if game.websocketConnection != nil {
+			game.logInfo(fmt.Sprintf("%v", msg))
 			go game.handleWebsocketMessage(msg)
 		}
 	}

@@ -1627,6 +1627,11 @@ chalk@^1.1.1:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
+chess.js@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/chess.js/-/chess.js-0.10.3.tgz#8c3b98e8411c2ff3ab4b1fc022ddebd1ae037120"
+  integrity sha512-i51JgVM0ksFMbLJYKoDpfrcFxJHq/XQQx8NltCdfMyDv7vpU5JVzsZz1EOw7nA27eGA5t8tSxodAN+Wc704BoQ==
+
 chessboardjsx@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chessboardjsx/-/chessboardjsx-2.4.2.tgz#69b607f67a7bd8c66b86d7e33dfb631cd87f6533"

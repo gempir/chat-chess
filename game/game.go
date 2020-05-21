@@ -60,11 +60,24 @@ func startGame(channel string, ws *websocket.Conn) *Game {
 	go game.twitchClient.Connect()
 	go game.joinChannel()
 
-	game.wsSend(&gameMessage{"game", game})
-
+	game.sendGameUpdate()
 	games = append(games, game)
 
 	return game
+}
+
+func (g *Game) sendGameUpdate() {
+	g.wsSend(&gameMessage{"game", g})
+}
+
+type action struct {
+	ID      string
+	Time    int64
+	Message string
+}
+
+func (g *Game) sendAction(message string) {
+	g.wsSend(&gameMessage{"action", action{xid.New().String(), time.Now().Unix(), message}})
 }
 
 func (g *Game) joinChannel() {
@@ -86,7 +99,8 @@ func (g *Game) makeMove(from, to string) {
 	for _, move := range moves {
 		if move.String() == from+to {
 
-			g.logInfo("Player making move " + from + "-" + to)
+			g.logInfo("Player made move " + from + "-" + to)
+			g.sendAction("[Player] " + from + "-" + to)
 			g.chessGame.Move(move)
 			g.GameFen = g.chessGame.FEN()
 			// reset voters
@@ -114,7 +128,8 @@ func (g *Game) sendChatMove() {
 		g.GameFen = g.chessGame.FEN()
 		g.moves = make(map[string]int)
 		g.logInfo("Chat making AUTO move " + moves[0].S1().String() + "-" + moves[0].S2().String())
-		g.wsSend(&gameMessage{"move", moves[0].S1().String() + "-" + moves[0].S2().String()})
+		g.sendAction("[Chat:Auto] " + moves[0].S1().String() + "-" + moves[0].S2().String())
+		g.sendGameUpdate()
 		return
 	}
 
@@ -128,7 +143,8 @@ func (g *Game) sendChatMove() {
 			g.chessGame.Move(move)
 			g.GameFen = g.chessGame.FEN()
 			g.moves = make(map[string]int)
-			g.wsSend("move=" + mostVotedMove)
+			g.sendGameUpdate()
+			g.sendAction("[Chat] " + resultMove[0] + "-" + resultMove[1])
 			return
 		}
 	}

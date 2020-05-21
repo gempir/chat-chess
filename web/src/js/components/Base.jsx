@@ -1,11 +1,12 @@
 import React from "react";
 import EventService from "../service/EventService";
-import Chessboard from "chessboardjsx";
+import Game from "./Game";
 
 export default class Base extends React.Component {
 
     state = {
         game: null,
+        actions: [],
     }
 
     componentDidMount() {
@@ -16,41 +17,60 @@ export default class Base extends React.Component {
 
     render() {
         return (
-            <div className="game">
+            <div className="gameWrapper">
                 {!this.state.game && <form action="" onSubmit={this.handleSubmit}>
                     <label htmlFor="channel">Type your channel name to start</label>
                     <input type="text" name="channel" placeholder="channel" autoComplete="off" />
                     &nbsp;
                     <input type="submit" value="start game" />
                 </form>}
+                <ul className="actions">
+                    {this.state.actions.sort(this.sortActions).map(action =>
+                        <li key={action.ID}>{this.formatTime(action.Time)} <strong>{action.Message}</strong></li>
+                    )}
+                </ul>
                 {this.state.game && <div>
-                    <div className="topMessage">playing against #{this.state.game.Channel}</div>   
-                    <Chessboard position={this.state.game.GameFen}/> 
+                    <div className="topMessage">playing against #{this.state.game.Channel}</div>
+                    <Game fen={this.state.game.GameFen} eventService={this.eventService} />
                 </div>}
             </div>
         );
+    }
+
+    sortActions = (a, b) => {
+        if (a.Time < b.Time) {
+            return 1;
+        }
+        if (a.Time > b.Time) {
+            return -1;
+        }
+        return 0;
+    }
+
+    formatTime = (unixTime) => {
+        const date = new Date(unixTime * 1000);
+
+        return date.toLocaleTimeString("en-US", { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
     }
 
     handleSubmit = (e) => {
         e.preventDefault();
         const data = new FormData(e.target);
 
-        this.eventService.sendMessage({ type: "start", value: data.get("channel") });
+        this.eventService.send({ type: "start", value: data.get("channel") });
     }
 
     handleMessage = (data) => {
-        console.log(data);
-
-        switch(data.type) {
+        switch (data.type) {
             case "game":
                 this.setState({
                     game: data.value,
                 });
                 break;
-            case "move":
-                const split2 = data.value.split("-");
-                game.move({ from: split2[0], to: split2[1] });
-                board.move(split1[1]);                    
+            case "action":
+                this.setState({
+                    actions: [...this.state.actions, data.value],
+                });
                 break;
         }
     }

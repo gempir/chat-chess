@@ -7,16 +7,41 @@ body {
     height: 100vh;
     color: var(--text);
     width: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
-.game {
+.gameWrapper {
     display: flex;
     justify-content: center;
 
     .topMessage {
         text-align: center;
         margin-bottom: 10px;
+    }
+
+    .actions {
+        margin: 0;
+        list-style: none;
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        bottom: 50px;
+        padding: 0;
+        overflow: scroll;
+        color: var(--weakText);
+
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+    
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: var(--lightBorder);
+        }
+
+        &::-webkit-scrollbar-corner {
+            background: transparent;
+        }
     }
 }
 
