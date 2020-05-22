@@ -10,14 +10,6 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Build web
-      working-directory: ./web
       run: |
         yarn install
         yarn build
-      
-    - name: Build Bot
-      working-directory: ./game
-      run: |
-        go get
-        go test
-        go build

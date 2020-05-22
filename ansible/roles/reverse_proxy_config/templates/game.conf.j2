@@ -1,7 +1,0 @@
-{{ game_host }} {
-    tls {{ email }}
-    proxy / localhost:8060 {
-        websocket
-        header_upstream -Origin
-    }
-}

@@ -1,2 +1,0 @@
-- name: Install proxy config
-  template: src=templates/game.conf.j2 dest=/etc/caddy/conf.d/game.conf

@@ -1,0 +1,21 @@
+{
+    "name": "twitch-chess",
+    "repository": "git@github.com:gempir/twitch-chess.git",
+    "author": "gempir <gempir.dev@gmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "watch": "parcel index.html",
+        "build": "parcel build index.html"
+    },
+    "devDependencies": {
+        "@types/react": "^16.9.35",
+        "parcel-bundler": "^1.12.4",
+        "typescript": "^3.9.3"
+    },
+    "dependencies": {
+        "chess.js": "^0.10.3",
+        "chessboardjsx": "^2.4.2",
+        "react": ">= 16.3.2",
+        "react-dom": ">= 16.3.2"
+    }
+}

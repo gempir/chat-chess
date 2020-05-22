@@ -12,57 +12,14 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Setup SSH
-      env:
-        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        SSH_KEY: ${{ secrets.ACCESS_TOKEN }}
-      run: |
-        mkdir ~/.ssh
-        echo "$SSH_KEY" > ~/.ssh/id_rsa
-        touch ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/id_rsa
-        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-        ssh-add ~/.ssh/id_rsa
-        ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-
     - name: Build web
-      working-directory: ./web
       run: |
         yarn install
         yarn build
-      
-    - name: Build Game
-      working-directory: ./game
-      run: |
-        go get
-        go build
-
-    - name: Stop Backend
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.ACCESS_TOKEN }}
-        port: ${{ secrets.PORT }}
-        script: systemctl stop game
-
-    - name: Deploy Backend
-      working-directory: ./game
-      run: |
-        scp game ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/chess
-
-    - name: Start Backend
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.ACCESS_TOKEN }}
-        port: ${{ secrets.PORT }}
-        script: systemctl start game
 
     - name: Deploy Frontend
       uses: peaceiris/actions-gh-pages@v2.3.1
       env:
         ACTIONS_DEPLOY_KEY: ${{ secrets.ACCESS_TOKEN }}
         PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: ./web/public
+        PUBLISH_DIR: ./dist

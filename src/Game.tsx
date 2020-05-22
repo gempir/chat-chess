@@ -1,8 +1,22 @@
 import Chessboard from "chessboardjsx";
-import React from "react";
-import Chess from "chess.js";
+import * as React from "react";
+import { Chess } from "chess.js";
 
-export default class Game extends React.Component {
+type props = {
+}
+
+type state = {
+    dropSquareStyle: object,
+    squareStyles: object, 
+    pieceSquare: string, 
+    square: string, 
+    history: Array<string>, 
+    fen: string
+}
+
+export default class Game extends React.Component<props, state> {
+    game: any;
+
     state = {
         // square styles for active drop square
         dropSquareStyle: {},
@@ -15,17 +29,7 @@ export default class Game extends React.Component {
         // array of past game moves
         history: [],
         // game state, will be overriden by server a lot
-        fen: this.props.fen,
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.fen != this.props.fen) {
-            this.setState({
-                fen: this.props.fen,
-            });
-
-            this.game.load(this.props.fen);
-        }
+        fen: "start",
     }
 
     componentDidMount() {
@@ -56,10 +60,10 @@ export default class Game extends React.Component {
             squareStyles: this.squareStyling({ pieceSquare, history })
         }));
 
-        this.props.eventService.send({ type: "move", value: `${sourceSquare}-${targetSquare}` });
+        // this.props.eventService.send({ type: "move", value: `${sourceSquare}-${targetSquare}` });
     };
 
-    calcWidth = ({screenWidth, screenHeight}) => {
+    calcWidth = ({ screenWidth, screenHeight }) => {
         return screenHeight - 100;
     }
 
