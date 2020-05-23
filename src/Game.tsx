@@ -32,6 +32,33 @@ export default class Game extends React.Component<props, state> {
         history: [],
     }
 
+    Wrapper = styled.div`
+        div[data-testid=white-square], div[data-testid=black-square] {
+            
+            
+            > div:first-child {
+                user-select: none;
+                
+                > div:first-child, > div:last-child, div[data-testid=bottom-left-1] {
+                    font-size: 2.5rem !important;
+                    margin-left: -3vh !important;
+                    align-self: center !important;
+                    color: var(--text) !important;
+
+                    svg {
+                        margin-left: 3vh !important;
+                    }
+                }
+
+                div[data-testid=bottom-left-a], div[data-testid=column-b], div[data-testid=column-c], div[data-testid=column-d], div[data-testid=column-e], div[data-testid=column-f], div[data-testid=column-g], div[data-testid=column-h] {
+                    margin-top: 7vh !important;
+                    padding-left: 0 !important;
+                    margin-left: 0 !important;
+                }
+            }
+        }
+    `;
+
     History = styled.ul`
         position: absolute;
         left: 20px;
@@ -69,12 +96,12 @@ export default class Game extends React.Component<props, state> {
     render() {
         const history = [...this.props.config.history].reverse();
 
-        return <div className="game">
+        return <this.Wrapper>
             <this.History>{history.map((item, key) => <li key={key}>{item.color} {item.from} -> {item.to}</li>)}</this.History>
             <Chessboard
                 calcWidth={this.calcWidth}
                 position={this.props.config.fen} onDrop={this.handleDrop} />
-        </div>
+        </this.Wrapper>
     }
 
     makeMove = (move: Move): Boolean => {
@@ -115,7 +142,7 @@ export default class Game extends React.Component<props, state> {
             }
         }
 
-        const validMoves = this.game.moves({verbose: true});
+        const validMoves = this.game.moves({ verbose: true });
         const autoMove = validMoves[Math.floor(Math.random() * validMoves.length)];
         if (!autoMove) {
             this.props.onGameOver();

@@ -90,6 +90,10 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		user-select: none;
 		bottom: 20px;
 		cursor: pointer;
+
+		&:hover {
+			transform: scale(1.1);
+		}
 	`;
 
 	constructor(props) {
