@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 declare global {
-    interface Window { gtag: any; }
+    interface Window { ga: any; }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));

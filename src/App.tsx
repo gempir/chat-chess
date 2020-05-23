@@ -171,8 +171,8 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	}
 
 	track() {
-		if (window.gtag && this.state.config) {
-			window.gtag('event', 'action', { event_label: "channel", event_category: "channel_join", value: this.state.config.channel, non_interaction: 1 });
+		if (window.ga && this.state.config) {
+			window.ga('send', 'event', 'game', 'join', 'channel', this.state.config.channel);
 		}
 	}
 
