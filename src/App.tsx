@@ -77,6 +77,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		font-size: 2rem;
 		user-select: none;
 		bottom: 20px;
+		cursor: pointer;
 	`;
 
 	constructor(props) {
