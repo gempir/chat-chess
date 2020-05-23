@@ -149,9 +149,11 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	handleGameStart = (config: GameConfig) => {
 		this.setState({
 			config: config,
-		}, this.persistState);
+		}, () => {
+			this.persistState();
+			this.track();
+		});
 		this.chatClient.join(config.channel);
-		this.track();
 	}
 
 	setupChat = () => {
