@@ -201,14 +201,14 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		this.votes = new Votes();
 
 		this.ticker = setInterval(() => {
-			const timeLeft = this.state.config.chatResponseTime--;
+			const timeLeft = this.state.timeLeft - 1;
 			this.setState({
 				announcement: "Vote now, like this: <strong>e7-e5</strong></>",
 				timeLeft: timeLeft,
 				popularVotes: this.votes.getPopularVotesWithCounts(),
 			});
 
-			if (timeLeft == 0) {
+			if (timeLeft === 0 || timeLeft < 0) {
 				clearInterval(this.ticker);
 
 				this.setState({
