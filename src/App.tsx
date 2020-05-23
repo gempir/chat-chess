@@ -8,7 +8,7 @@ import Move from './Model/Move';
 import Votes from './Model/Votes';
 import PopularVote from './Model/Vote';
 
-export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<PopularVote>, announcement: string }> {
+export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<PopularVote>, announcement: string, timeLeft: number }> {
 	chatClient: ChatClient;
 	ticker: NodeJS.Timer;
 	moveRegex: RegExp;
@@ -35,12 +35,20 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		width: 100vw;
 		overflow: hidden;
 		justify-content: flex-start;
-		padding: 5em;
+		padding: 5rem;
+		padding-top: 2rem;
 		color: var(--text);
 		background: var(--background);
 	`;
 
 	Announcement = styled.div`
+		height: 25px;
+		font-size: 25px;
+		line-height: 25px;
+		margin-bottom: 10px;
+	`;
+
+	TimeLeft = styled.div`
 		height: 25px;
 		font-size: 25px;
 		line-height: 25px;
@@ -119,12 +127,19 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 						<li key={key}>{key + 1}. {vote.move.toString()} ({vote.count})</li>)}
 					</this.PopularVotes>
 					<this.Announcement>{this.state.announcement && this.state.announcement}</this.Announcement>
-					{this.state.config && <Game config={this.state.config} onUpdateConfig={this.handleConfigUpdate} onPlayerMove={this.handlePlayerMove} registerOnChatMove={move => this.moveChat = move} />}
+					<this.TimeLeft>{this.state.timeLeft > 0 && `${this.state.timeLeft}s`}&nbsp;</this.TimeLeft>
+					{this.state.config && <Game config={this.state.config} onUpdateConfig={this.handleConfigUpdate} onPlayerMove={this.handlePlayerMove} registerOnChatMove={move => this.moveChat = move} onGameOver={this.handleGameOver} />}
 					{!this.state.config && <StartGame onGameStart={this.handleGameStart} />}
 					<this.Reset onClick={this.clearState}>🗑️</this.Reset>
 				</this.Wrapper>
 			</this.CSSVariables>
 		);
+	}
+
+	handleGameOver = () => {
+		this.setState({
+			announcement: "Game over!"
+		});
 	}
 
 	handleGameStart = (config: GameConfig) => {
@@ -155,7 +170,8 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 	startChatVoteCollection = () => {
 		this.setState({
-			announcement: `Player moved, chat now voting ${this.state.config.chatResponseTime}s`,
+			announcement: `Vote now, like this: e7-e5`,
+			timeLeft: this.state.config.chatResponseTime,
 			popularVotes: [],
 		});
 
@@ -166,7 +182,8 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			count++;
 
 			this.setState({
-				announcement: `Player moved, chat now voting ${this.state.config.chatResponseTime - count}s`,
+				announcement: `Vote now, like this: e7-e5`,
+				timeLeft: this.state.config.chatResponseTime - count,
 				popularVotes: this.votes.getPopularVotesWithCounts(),
 			});
 
@@ -175,6 +192,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 				this.setState({
 					announcement: `Chat moved`,
+					timeLeft: 0,
 				});
 
 				this.moveChat(this.votes.getPopularVotesWithCounts());
