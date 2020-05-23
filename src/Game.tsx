@@ -1,8 +1,10 @@
 import Chessboard from "chessboardjsx";
 import * as React from "react";
 import { Chess } from "chess.js";
+import GameConfig from "./Model/GameConfig";
 
 type props = {
+    config: GameConfig
 }
 
 type state = {
@@ -18,17 +20,11 @@ export default class Game extends React.Component<props, state> {
     game: any;
 
     state = {
-        // square styles for active drop square
         dropSquareStyle: {},
-        // custom square styles
         squareStyles: {},
-        // square with the currently clicked piece
         pieceSquare: "",
-        // currently clicked square
         square: "",
-        // array of past game moves
         history: [],
-        // game state, will be overriden by server a lot
         fen: "start",
     }
 
@@ -64,7 +60,7 @@ export default class Game extends React.Component<props, state> {
     };
 
     calcWidth = ({ screenWidth, screenHeight }) => {
-        return screenHeight - 100;
+        return screenHeight - 200;
     }
 
     squareStyling = ({ pieceSquare, history }) => {

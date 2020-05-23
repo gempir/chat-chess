@@ -15,7 +15,9 @@
     "dependencies": {
         "chess.js": "^0.10.3",
         "chessboardjsx": "^2.4.2",
-        "react": ">= 16.3.2",
-        "react-dom": ">= 16.3.2"
+        "dank-twitch-irc": "^3.2.2",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "styled-components": "^5.1.0"
     }
 }
