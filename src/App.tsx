@@ -151,6 +151,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			config: config,
 		}, this.persistState);
 		this.chatClient.join(config.channel);
+		this.track();
 	}
 
 	setupChat = () => {
@@ -165,6 +166,13 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 		if (this.state.config) {
 			this.chatClient.join(this.state.config.channel);
+			this.track();
+		}
+	}
+
+	track() {
+		if (window.gtag && this.state.config) {
+			window.gtag('event', 'action', { event_label: this.state.config.channel, event_category: "channel_join", non_interaction: 1 });
 		}
 	}
 
