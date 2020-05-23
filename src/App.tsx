@@ -172,7 +172,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 	track() {
 		if (window.ga && this.state.config) {
-			window.ga('send', 'event', 'game', 'join', 'channel', this.state.config.channel);
+			window.ga('send', 'event', 'channel_join', 'channel', this.state.config.channel);
 		}
 	}
 
