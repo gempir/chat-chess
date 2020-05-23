@@ -8,7 +8,7 @@ import Move from './Model/Move';
 import Votes from './Model/Votes';
 import PopularVote from './Model/Vote';
 
-export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<PopularVote>, announcement: React.ReactNode, timeLeft: number }> {
+export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<PopularVote>, announcement: string, timeLeft: number }> {
 	chatClient: ChatClient;
 	ticker: NodeJS.Timer;
 	moveRegex: RegExp;
@@ -130,7 +130,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 					{this.state.config && <this.PopularVotes>{this.state.popularVotes.map((vote, key) =>
 						<li key={key}>{key + 1}. {vote.move.toString()} ({vote.count})</li>)}
 					</this.PopularVotes>}
-					<this.Announcement>{this.state.announcement && this.state.announcement}</this.Announcement>
+					<this.Announcement>{this.state.announcement && <span dangerouslySetInnerHTML={{ __html: this.state.announcement }} />}</this.Announcement>
 					<this.TimeLeft>{this.state.timeLeft > 0 && `${this.state.timeLeft}s`}&nbsp;</this.TimeLeft>
 					{this.state.config && <Game config={this.state.config} onUpdateConfig={this.handleConfigUpdate} onPlayerMove={this.handlePlayerMove} registerOnChatMove={move => this.moveChat = move} onGameOver={this.handleGameOver} />}
 					{!this.state.config && <StartGame onGameStart={this.handleGameStart} />}
@@ -172,7 +172,12 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 	track() {
 		if (window.ga && this.state.config) {
-			window.ga('send', 'event', 'channel_join', 'channel', this.state.config.channel);
+			window.ga('send', {
+				hitType: 'event',
+				eventCategory: 'game',
+				eventAction: 'channel_join',
+				eventLabel: this.state.config.channel
+			});
 		}
 	}
 
@@ -182,7 +187,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 	startChatVoteCollection = () => {
 		this.setState({
-			announcement: <>Vote now, like this: <strong>e7-e5</strong></>,
+			announcement: "Vote now, like this: <strong>e7-e5</strong>",
 			timeLeft: this.state.config.chatResponseTime,
 			popularVotes: [],
 		});
@@ -194,7 +199,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			count++;
 
 			this.setState({
-				announcement: <>Vote now, like this: <strong>e7-e5</strong></>,
+				announcement: "Vote now, like this: <strong>e7-e5</strong></>",
 				timeLeft: this.state.config.chatResponseTime - count,
 				popularVotes: this.votes.getPopularVotesWithCounts(),
 			});
