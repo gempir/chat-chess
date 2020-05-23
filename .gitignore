@@ -2,13 +2,4 @@ node_modules/
 .cache/
 dist/
 !dist/CNAME
-!dist/android-chrome-192x192.png
-!dist/android-chrome-512x512.png
-!dist/apple-touch-icon.png
-!dist/browserconfig.xml
-!dist/favicon-16x16.png
-!dist/favicon-32x32.png
-!dist/favion.ico
-!dist/mstile-150x150.png
-!dist/safari-pinnged-tab.svg
-!dist/site.webmanifest
+!dist/favicon.ico
