@@ -49,7 +49,16 @@ export default class StartGame extends React.Component<props, state> {
                 background: var(--lighterBackground);
             }
         }
-	`;
+    `;
+    
+    Rules = styled.ul`
+        list-style-type: disc;
+        padding-left: 20px;
+
+        li {
+            margin-top: 10px;
+        }
+    `;
 
 
     render() {
@@ -59,6 +68,16 @@ export default class StartGame extends React.Component<props, state> {
             <label htmlFor="chat-response-time">Seconds your chat has time to move</label>
             <input type="number" name="chat-response-time" defaultValue="30" />
             <input type="submit" value="start game" />
+            <br/>
+            <h2>How it works</h2>
+            <this.Rules>
+                <li>Streamer will play as white (w) and chat will play as black (b)</li>
+                <li>Streamer has unlimited time to move</li>
+                <li>After Streamer moved chat has configured amount of time to vote on a move</li>
+                <li>Vote in chat with a notation like "<strong>e5-e7</strong>" anywhere in the message, but only 1 vote per user</li>
+                <li>If nobody voted, a random move will be executed</li>
+                <li>Reset or start new game on the bottom left</li>
+            </this.Rules>
         </this.Form>
     }
 

@@ -8,7 +8,7 @@ import Move from './Model/Move';
 import Votes from './Model/Votes';
 import PopularVote from './Model/Vote';
 
-export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<PopularVote>, announcement: string, timeLeft: number }> {
+export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<PopularVote>, announcement: React.ReactNode, timeLeft: number }> {
 	chatClient: ChatClient;
 	ticker: NodeJS.Timer;
 	moveRegex: RegExp;
@@ -39,6 +39,10 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		padding-top: 2rem;
 		color: var(--text);
 		background: var(--background);
+
+		strong {
+			color: var(--highlight);
+		}
 	`;
 
 	Announcement = styled.div`
@@ -170,7 +174,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 	startChatVoteCollection = () => {
 		this.setState({
-			announcement: `Vote now, like this: e7-e5`,
+			announcement: <>Vote now, like this: <strong>e7-e5</strong></>,
 			timeLeft: this.state.config.chatResponseTime,
 			popularVotes: [],
 		});
@@ -182,7 +186,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			count++;
 
 			this.setState({
-				announcement: `Vote now, like this: e7-e5`,
+				announcement: <>Vote now, like this: <strong>e7-e5</strong></>,
 				timeLeft: this.state.config.chatResponseTime - count,
 				popularVotes: this.votes.getPopularVotesWithCounts(),
 			});
