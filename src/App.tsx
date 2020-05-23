@@ -123,9 +123,9 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		return (
 			<this.CSSVariables>
 				<this.Wrapper>
-					<this.PopularVotes>{this.state.popularVotes.map((vote, key) =>
+					{this.state.config && <this.PopularVotes>{this.state.popularVotes.map((vote, key) =>
 						<li key={key}>{key + 1}. {vote.move.toString()} ({vote.count})</li>)}
-					</this.PopularVotes>
+					</this.PopularVotes>}
 					<this.Announcement>{this.state.announcement && this.state.announcement}</this.Announcement>
 					<this.TimeLeft>{this.state.timeLeft > 0 && `${this.state.timeLeft}s`}&nbsp;</this.TimeLeft>
 					{this.state.config && <Game config={this.state.config} onUpdateConfig={this.handleConfigUpdate} onPlayerMove={this.handlePlayerMove} registerOnChatMove={move => this.moveChat = move} onGameOver={this.handleGameOver} />}

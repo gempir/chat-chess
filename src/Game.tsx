@@ -67,8 +67,10 @@ export default class Game extends React.Component<props, state> {
     }
 
     render() {
+        const history = [...this.props.config.history].reverse();
+
         return <div className="game">
-            <this.History>{this.props.config.history.reverse().map((item, key) => <li key={key}>{item.color} {item.from} -> {item.to}</li>)}</this.History>
+            <this.History>{history.map((item, key) => <li key={key}>{item.color} {item.from} -> {item.to}</li>)}</this.History>
             <Chessboard
                 calcWidth={this.calcWidth}
                 position={this.props.config.fen} onDrop={this.handleDrop} />
