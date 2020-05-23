@@ -120,7 +120,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 					<this.Announcement>{this.state.announcement && this.state.announcement}</this.Announcement>
 					{this.state.config && <Game config={this.state.config} onUpdateConfig={this.handleConfigUpdate} onPlayerMove={this.handlePlayerMove} registerOnChatMove={move => this.moveChat = move} />}
 					{!this.state.config && <StartGame onGameStart={this.handleGameStart} />}
-					<this.Reset onClick={this.clearState}>🚫</this.Reset>
+					<this.Reset onClick={this.clearState}>🗑️</this.Reset>
 				</this.Wrapper>
 			</this.CSSVariables>
 		);
