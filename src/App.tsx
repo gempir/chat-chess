@@ -200,22 +200,19 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 		this.votes = new Votes();
 
-		let count = 0;
 		this.ticker = setInterval(() => {
-			count++;
-
+			const timeLeft = this.state.config.chatResponseTime--;
 			this.setState({
 				announcement: "Vote now, like this: <strong>e7-e5</strong></>",
-				timeLeft: this.state.config.chatResponseTime - count,
+				timeLeft: timeLeft,
 				popularVotes: this.votes.getPopularVotesWithCounts(),
 			});
 
-			if (count === this.state.config.chatResponseTime) {
+			if (timeLeft == 0) {
 				clearInterval(this.ticker);
 
 				this.setState({
 					announcement: `Chat moved`,
-					timeLeft: 0,
 				});
 
 				this.moveChat(this.votes.getPopularVotesWithCounts());
