@@ -118,6 +118,7 @@ export default class Game extends React.Component<props, state> {
         }));
         if (this.game.game_over()) {
             this.props.onGameOver();
+            return false;
         }
 
         return true;
@@ -127,9 +128,9 @@ export default class Game extends React.Component<props, state> {
         if (piece.startsWith("b") || this.game.turn() !== piece.slice(0, 1)) return;
 
         const moveObj = new Move(sourceSquare, targetSquare);
-        const sucess = this.makeMove(moveObj);
+        const keepGoing = this.makeMove(moveObj);
 
-        if (!sucess) {
+        if (!keepGoing) {
             return;
         }
         this.props.onPlayerMove(moveObj);
