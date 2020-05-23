@@ -2,9 +2,12 @@ import Chessboard from "chessboardjsx";
 import * as React from "react";
 import { Chess } from "chess.js";
 import GameConfig from "./Model/GameConfig";
+import Move from "./Model/Move";
+import styled from "styled-components";
 
 type props = {
-    config: GameConfig
+    config: GameConfig,
+    onUpdateConfig: (config: GameConfig) => void,
 }
 
 type state = {
@@ -13,7 +16,6 @@ type state = {
     pieceSquare: string, 
     square: string, 
     history: Array<string>, 
-    fen: string
 }
 
 export default class Game extends React.Component<props, state> {
@@ -25,8 +27,31 @@ export default class Game extends React.Component<props, state> {
         pieceSquare: "",
         square: "",
         history: [],
-        fen: "start",
     }
+    
+    History = styled.ul`
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        bottom: 20px;
+        overflow: scroll;
+        list-style-type: none;
+        width: 200px;
+        scrollbar-color: transparent var(--lightBorder);
+
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+    
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: var(--lightBorder);
+        }
+
+        &::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+    `;
 
     componentDidMount() {
         this.game = new Chess();
@@ -34,27 +59,27 @@ export default class Game extends React.Component<props, state> {
 
     render() {
         return <div className="game">
+            <this.History>{this.state.history.map((item, key) => <li key={key}>{item.color} {item.from} -> {item.to}</li>)}</this.History>
             <Chessboard
                 calcWidth={this.calcWidth}
-                position={this.state.fen} onDrop={this.handleDrop} />
+                position={this.props.config.fen} onDrop={this.handleDrop} />
         </div>
     }
 
     handleDrop = ({ sourceSquare, targetSquare }) => {
-        // see if the move is legal
-        let move = this.game.move({
-            from: sourceSquare,
-            to: targetSquare,
-            promotion: "q" // always promote to a queen for example simplicity
-        });
+        const moveObj = new Move(sourceSquare, targetSquare);
+        const move = this.game.move(moveObj);
 
         // illegal move
         if (move === null) return;
+
+        this.props.onUpdateConfig({...this.props.config, fen: this.game.fen()});
         this.setState(({ history, pieceSquare }) => ({
-            fen: this.game.fen(),
             history: this.game.history({ verbose: true }),
             squareStyles: this.squareStyling({ pieceSquare, history })
         }));
+
+        console.log(this.state.history);
 
         // this.props.eventService.send({ type: "move", value: `${sourceSquare}-${targetSquare}` });
     };

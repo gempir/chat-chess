@@ -5,7 +5,7 @@ import { ChatClient } from "dank-twitch-irc";
 import StartGame from './StartGame';
 import GameConfig from './Model/GameConfig';
 
-export default class App extends React.Component<{}, { config: GameConfig }> {
+export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<string> }> {
 	chatClient: ChatClient;
 
 	CSSVariables = styled.div`
@@ -36,6 +36,7 @@ export default class App extends React.Component<{}, { config: GameConfig }> {
 
 		this.state = {
 			config: null,
+			popularVotes: [],
 		}
 	}
 
@@ -47,7 +48,7 @@ export default class App extends React.Component<{}, { config: GameConfig }> {
 		return (
 			<this.CSSVariables>
 				<this.Wrapper>
-					{this.state.config && <Game config={this.state.config} />}
+					{this.state.config && <Game config={this.state.config} onUpdateConfig={this.handleConfigUpdate} />}
 					{!this.state.config && <StartGame onGameStart={this.handleGameStart} />}
 				</this.Wrapper>
 			</this.CSSVariables>
@@ -70,6 +71,12 @@ export default class App extends React.Component<{}, { config: GameConfig }> {
 			this.setupChat();
 		});
 		this.chatClient.on("PRIVMSG", this.handleChatMessage);
+	}
+
+	handleConfigUpdate = (config: GameConfig) => {
+		this.setState({
+			config: config,
+		});
 	}
 
 	handleChatMessage = (data: object) => {
