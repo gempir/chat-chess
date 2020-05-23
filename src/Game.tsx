@@ -4,10 +4,13 @@ import { Chess } from "chess.js";
 import GameConfig from "./Model/GameConfig";
 import Move from "./Model/Move";
 import styled from "styled-components";
+import PopularVote from "./Model/Vote";
 
 type props = {
     config: GameConfig,
     onUpdateConfig: (config: GameConfig) => void,
+    onPlayerMove: (move: Move) => void,
+    registerOnChatMove: any,
 }
 
 type state = {
@@ -35,8 +38,8 @@ export default class Game extends React.Component<props, state> {
         top: 20px;
         bottom: 20px;
         overflow: scroll;
+        font-size: 2rem;
         list-style-type: none;
-        width: 200px;
         scrollbar-color: transparent var(--lightBorder);
 
         &::-webkit-scrollbar {
@@ -55,6 +58,7 @@ export default class Game extends React.Component<props, state> {
 
     componentDidMount() {
         this.game = new Chess();
+        this.props.registerOnChatMove(this.chatMove);
     }
 
     render() {
@@ -66,7 +70,9 @@ export default class Game extends React.Component<props, state> {
         </div>
     }
 
-    handleDrop = ({ sourceSquare, targetSquare }) => {
+    handleDrop = ({ sourceSquare, targetSquare, piece }) => {
+        if (piece.startsWith("b")) return;
+
         const moveObj = new Move(sourceSquare, targetSquare);
         const move = this.game.move(moveObj);
 
@@ -79,10 +85,37 @@ export default class Game extends React.Component<props, state> {
             squareStyles: this.squareStyling({ pieceSquare, history })
         }));
 
-        console.log(this.state.history);
-
-        // this.props.eventService.send({ type: "move", value: `${sourceSquare}-${targetSquare}` });
+        this.props.onPlayerMove(move);
     };
+
+    chatMove = (votes: Array<PopularVote>) => {
+        for (const moveObj of votes) {
+            const move = this.game.move(moveObj.move);
+
+            // illegal move
+            if (move === null) continue;
+
+            this.props.onUpdateConfig({...this.props.config, fen: this.game.fen()});
+            this.setState(({ history, pieceSquare }) => ({
+                history: this.game.history({ verbose: true }),
+                squareStyles: this.squareStyling({ pieceSquare, history })
+            }));
+
+            return;
+        }
+
+        const validMoves = this.game.moves();
+        const autoMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+        const move = this.game.move(autoMove);
+
+        this.props.onUpdateConfig({...this.props.config, fen: this.game.fen()});
+        this.setState(({ history, pieceSquare }) => ({
+            history: this.game.history({ verbose: true }),
+            squareStyles: this.squareStyling({ pieceSquare, history })
+        }));
+
+        return;
+    }
 
     calcWidth = ({ screenWidth, screenHeight }) => {
         return screenHeight - 200;
