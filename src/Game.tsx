@@ -15,10 +15,9 @@ type props = {
 
 type state = {
     dropSquareStyle: object,
-    squareStyles: object, 
-    pieceSquare: string, 
-    square: string, 
-    history: Array<string>, 
+    squareStyles: object,
+    pieceSquare: string,
+    square: string
 }
 
 export default class Game extends React.Component<props, state> {
@@ -31,7 +30,7 @@ export default class Game extends React.Component<props, state> {
         square: "",
         history: [],
     }
-    
+
     History = styled.ul`
         position: absolute;
         left: 20px;
@@ -58,12 +57,17 @@ export default class Game extends React.Component<props, state> {
 
     componentDidMount() {
         this.game = new Chess();
+        this.loadConfig(this.props.config);
         this.props.registerOnChatMove(this.chatMove);
+    }
+
+    loadConfig = (config: GameConfig) => {
+        this.game.load(config.fen);
     }
 
     render() {
         return <div className="game">
-            <this.History>{this.state.history.map((item, key) => <li key={key}>{item.color} {item.from} -> {item.to}</li>)}</this.History>
+            <this.History>{this.props.config.history.map((item, key) => <li key={key}>{item.color} {item.from} -> {item.to}</li>)}</this.History>
             <Chessboard
                 calcWidth={this.calcWidth}
                 position={this.props.config.fen} onDrop={this.handleDrop} />
@@ -79,9 +83,10 @@ export default class Game extends React.Component<props, state> {
         // illegal move
         if (move === null) return;
 
-        this.props.onUpdateConfig({...this.props.config, fen: this.game.fen()});
-        this.setState(({ history, pieceSquare }) => ({
-            history: this.game.history({ verbose: true }),
+        const history = this.game.history({ verbose: true });
+
+        this.props.onUpdateConfig({ ...this.props.config, fen: this.game.fen(), history, turn: this.game.turn() });
+        this.setState(({ pieceSquare }) => ({
             squareStyles: this.squareStyling({ pieceSquare, history })
         }));
 
@@ -94,10 +99,10 @@ export default class Game extends React.Component<props, state> {
 
             // illegal move
             if (move === null) continue;
+            const history = this.game.history({ verbose: true });
 
-            this.props.onUpdateConfig({...this.props.config, fen: this.game.fen()});
-            this.setState(({ history, pieceSquare }) => ({
-                history: this.game.history({ verbose: true }),
+            this.props.onUpdateConfig({ ...this.props.config, fen: this.game.fen(), history, turn: this.game.turn() });
+            this.setState(({ pieceSquare }) => ({
                 squareStyles: this.squareStyling({ pieceSquare, history })
             }));
 
@@ -108,9 +113,10 @@ export default class Game extends React.Component<props, state> {
         const autoMove = validMoves[Math.floor(Math.random() * validMoves.length)];
         const move = this.game.move(autoMove);
 
-        this.props.onUpdateConfig({...this.props.config, fen: this.game.fen()});
-        this.setState(({ history, pieceSquare }) => ({
-            history: this.game.history({ verbose: true }),
+        const history = this.game.history({ verbose: true });
+
+        this.props.onUpdateConfig({ ...this.props.config, fen: this.game.fen(), history, turn: this.game.turn() });
+        this.setState(({ pieceSquare }) => ({
             squareStyles: this.squareStyling({ pieceSquare, history })
         }));
 

@@ -79,11 +79,22 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			config: null,
 			popularVotes: [],
 			announcement: null,
+			...JSON.parse(window.localStorage.getItem("state"))
 		}
 	}
 
 	componentDidMount = () => {
 		this.setupChat();
+
+		if (this.state.config && this.state.config.turn === "b") {
+			this.startChatVoteCollection();
+		}
+	}
+
+	componentDidUpdate = (prevProps, prevState) => {
+		if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+			this.persistState();
+		}
 	}
 
 	render() {
@@ -104,7 +115,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	handleGameStart = (config: GameConfig) => {
 		this.setState({
 			config: config,
-		});
+		}, this.persistState);
 		this.chatClient.join(config.channel);
 	}
 
@@ -117,9 +128,17 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			this.setupChat();
 		});
 		this.chatClient.on("PRIVMSG", this.handleChatMessage);
+
+		if (this.state.config) {
+			this.chatClient.join(this.state.config.channel);
+		}
 	}
 
 	handlePlayerMove = (move: Move) => {
+		this.startChatVoteCollection();
+	}
+
+	startChatVoteCollection = () => {
 		this.setState({
 			announcement: `Player moved, chat now voting ${this.state.config.chatResponseTime}s`,
 			popularVotes: [],
@@ -152,6 +171,10 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		this.setState({
 			config: config,
 		});
+	}
+
+	persistState = () => {
+		window.localStorage.setItem("state", JSON.stringify(this.state));
 	}
 
 	handleChatMessage = (data: PrivmsgMessage) => {

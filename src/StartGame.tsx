@@ -69,7 +69,9 @@ export default class StartGame extends React.Component<props, state> {
         this.props.onGameStart({
             fen: "start",
             channel: String(data.get("channel")),
-            chatResponseTime: Number(data.get("chat-response-time"))
-        }); 
+            chatResponseTime: Number(data.get("chat-response-time")),
+            history: [],
+            turn: "w"
+        });
     }
 }
