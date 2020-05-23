@@ -35,7 +35,7 @@ export default class Game extends React.Component<props, state> {
         position: absolute;
         left: 20px;
         top: 20px;
-        bottom: 20px;
+        bottom: 50px;
         overflow: scroll;
         font-size: 2rem;
         list-style-type: none;

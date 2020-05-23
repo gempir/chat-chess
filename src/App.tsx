@@ -70,12 +70,25 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
         }
 	`;
 
+	Reset = styled.div`
+		position: absolute;
+		bottom: 0;
+		left: 20px;
+		font-size: 2rem;
+		user-select: none;
+		bottom: 20px;
+	`;
+
 	constructor(props) {
 		super(props);
 
 		this.moveRegex = new RegExp(/([a-h])([1-8])-([a-h])([1-8])/);
 
-		this.state = {
+		this.state = this.createInitialState();
+	}
+
+	createInitialState = () => {
+		return {
 			config: null,
 			popularVotes: [],
 			announcement: null,
@@ -107,6 +120,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 					<this.Announcement>{this.state.announcement && this.state.announcement}</this.Announcement>
 					{this.state.config && <Game config={this.state.config} onUpdateConfig={this.handleConfigUpdate} onPlayerMove={this.handlePlayerMove} registerOnChatMove={move => this.moveChat = move} />}
 					{!this.state.config && <StartGame onGameStart={this.handleGameStart} />}
+					<this.Reset onClick={this.clearState}>🚫</this.Reset>
 				</this.Wrapper>
 			</this.CSSVariables>
 		);
@@ -175,6 +189,13 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 	persistState = () => {
 		window.localStorage.setItem("state", JSON.stringify(this.state));
+	}
+
+	clearState = () => {
+		window.localStorage.removeItem("state");
+		this.setState({
+			...this.createInitialState(),
+		})
 	}
 
 	handleChatMessage = (data: PrivmsgMessage) => {
