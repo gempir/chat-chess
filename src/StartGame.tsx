@@ -73,10 +73,10 @@ export default class StartGame extends React.Component<props, state> {
 
     render() {
         // @ts-ignore
-        const button = <GitHubButton href="https://github.com/gempir/twitch-chess" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star gempir/twitch-chess on GitHub">Star</GitHubButton>;
+        const button = <GitHubButton href="https://github.com/gempir/chat-chess" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star gempir/chat-chess on GitHub">Star</GitHubButton>;
 
         return <this.Form action="" onSubmit={this.handleSubmit}>
-            <h1>Twitch-Chess {button}</h1>
+            <h1>Chat-Chess {button}</h1>
             <h3>made by <a href="https://twitch.tv/gempir">twitch.tv/gempir</a></h3>
             <label htmlFor="channel">Your twitch channel</label>
             <input type="text" name="channel" placeholder="channel" autoComplete="off" />

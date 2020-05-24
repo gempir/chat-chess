@@ -1,6 +1,6 @@
 {
-    "name": "twitch-chess",
-    "repository": "git@github.com:gempir/twitch-chess.git",
+    "name": "chat-chess",
+    "repository": "git@github.com:gempir/chat-chess.git",
     "author": "gempir <gempir.dev@gmail.com>",
     "license": "MIT",
     "scripts": {
