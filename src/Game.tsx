@@ -58,26 +58,28 @@ export default class Game extends React.Component<props, state> {
     `;
 
     History = styled.table`
-        position: absolute;
-        left: 20px;
-        top: 20px;
-        bottom: 50px;
-        overflow: scroll;
-        font-size: 2rem;
-        list-style-type: none;
-        scrollbar-color: transparent var(--lightBorder);
+        tbody {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            bottom: 50px;
+            overflow: scroll;
+            font-size: 2rem;
+            list-style-type: none;
+            scrollbar-color: transparent var(--lightBorder);
 
-        &::-webkit-scrollbar {
-            width: 10px;
-        }
-    
-        &::-webkit-scrollbar-thumb {
-            border-radius: 10px;
-            background: var(--lightBorder);
-        }
+            &::-webkit-scrollbar {
+                width: 10px;
+            }
+        
+            &::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                background: var(--lightBorder);
+            }
 
-        &::-webkit-scrollbar-corner {
-            background: transparent;
+            &::-webkit-scrollbar-corner {
+                background: transparent;
+            }
         }
     `;
 

@@ -60,31 +60,33 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	`;
 
 	PopularVotes = styled.table`
-		position: absolute;
-        right: 20px;
-        top: 20px;
-		font-size: 2rem;
-        bottom: 20px;
-        overflow: scroll;
-        scrollbar-color: transparent var(--lightBorder);
+		tbody {
+			position: absolute;
+        	right: 20px;
+			top: 20px;
+			font-size: 2rem;
+			bottom: 20px;
+			overflow: scroll;
+			scrollbar-color: transparent var(--lightBorder);
 
-        &::-webkit-scrollbar {
-            width: 10px;
-        }
-    
-        &::-webkit-scrollbar-thumb {
-            border-radius: 10px;
-            background: var(--lightBorder);
-        }
+			&::-webkit-scrollbar {
+				width: 10px;
+			}
+		
+			&::-webkit-scrollbar-thumb {
+				border-radius: 10px;
+				background: var(--lightBorder);
+			}
 
-        &::-webkit-scrollbar-corner {
-            background: transparent;
-        }
+			&::-webkit-scrollbar-corner {
+				background: transparent;
+			}
 
-		em {
-			font-style: normal;
-			color: var(--lighterBackground);
-		}
+			em {
+				font-style: normal;
+				color: var(--lighterBackground);
+			}
+		}       
 	`;
 
 	Reset = styled.div`
@@ -244,7 +246,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	}
 
 	handleChatMessage = (data: PrivmsgMessage) => {
-		const found = data.messageText.match(this.moveRegex);
+		const found = data.messageText.toLowerCase().match(this.moveRegex);
 		if (found) {
 			const move = new Move(found[1] + found[2], found[3] + found[4]);
 
