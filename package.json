@@ -5,7 +5,7 @@
     "license": "MIT",
     "scripts": {
         "watch": "parcel index.html",
-        "build": "parcel build index.html"
+        "build": "parcel build index.html --no-minify"
     },
     "devDependencies": {
         "@types/react": "^16.9.35",
@@ -15,7 +15,7 @@
     "dependencies": {
         "chess.js": "^0.10.3",
         "chessboardjsx": "^2.4.2",
-        "dank-twitch-irc": "^3.2.4",
+        "dank-twitch-irc": "^3.2.5",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
         "react-github-btn": "^1.2.0",
