@@ -86,7 +86,7 @@ export default class StartGame extends React.Component<props, state> {
             <br />
             <h2>How it works</h2>
             <this.Rules>
-                <li>Streamer will play as white (w) and chat will play as black (b)</li>
+                <li>Streamer will play as white and chat will play as black</li>
                 <li>Streamer has unlimited time to move</li>
                 <li>After Streamer moved chat has configured amount of time to vote on a move</li>
                 <li>Vote in chat with a notation like "<strong>e5-e7</strong>" anywhere in the message, but only 1 vote per user</li>
