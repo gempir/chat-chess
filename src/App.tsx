@@ -10,7 +10,7 @@ import PopularVote from './Model/Vote';
 
 export default class App extends React.Component<{}, { config: GameConfig, popularVotes: Array<PopularVote>, announcement: string, timeLeft: number }> {
 	chatClient: ChatClient;
-	ticker: NodeJS.Timer;
+	ticker: number;
 	moveRegex: RegExp;
 	votes: Votes;
 	moveChat: (votes: Array<PopularVote>) => void;
@@ -245,6 +245,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	}
 
 	clearState = () => {
+		clearInterval(this.ticker);
 		window.localStorage.removeItem("state");
 		this.setState({
 			...this.createInitialState(),
