@@ -57,7 +57,7 @@ export default class Game extends React.Component<props, state> {
         }
     `;
 
-    History = styled.ul`
+    History = styled.table`
         position: absolute;
         left: 20px;
         top: 20px;
@@ -81,6 +81,14 @@ export default class Game extends React.Component<props, state> {
         }
     `;
 
+    WhitePiece = styled.span`
+        color: var(--text);
+    `;
+
+    BlackPiece = styled.span`
+        color: var(--lighterBackground);
+    `;
+
     componentDidMount() {
         this.game = new Chess();
         this.loadConfig(this.props.config);
@@ -88,14 +96,16 @@ export default class Game extends React.Component<props, state> {
     }
 
     loadConfig = (config: GameConfig) => {
-        this.game.load(config.fen);
+        for (const move of config.history) {
+            this.game.move(move);
+        }
     }
 
     render() {
         const history = [...this.props.config.history].reverse();
 
         return <this.Wrapper>
-            <this.History>{history.map((item, key) => <li key={key}>{item.color} {item.from} -> {item.to}</li>)}</this.History>
+            <this.History><tbody>{history.map((item, key) => <tr key={key}><td>{this.renderChessPiece(item.piece, item.color)}</td><td>{item.from}</td><td>{item.to}</td></tr>)}</tbody></this.History>
             <Chessboard
                 calcWidth={this.calcWidth}
                 position={this.props.config.fen} onDrop={this.handleDrop} />
@@ -174,4 +184,35 @@ export default class Game extends React.Component<props, state> {
             })
         };
     };
+
+    renderChessPiece = (piece: string, color: string) => {
+        let result = "";
+        switch (piece) {
+            case "p":
+                result = "♟︎";
+                break;
+            case "k":
+                result = "♚";
+                break;
+            case "q":
+                result = "♛";
+                break;
+            case "r":
+                result = "♜";
+                break;
+            case "b":
+                result = "♝";
+                break;
+            case "n":
+                result = "♞";
+                break;
+
+        }
+
+        if (color === "w") {
+            return <this.WhitePiece>{result}</this.WhitePiece>
+        }
+
+        return <this.BlackPiece>{result}</this.BlackPiece>;
+    }
 }

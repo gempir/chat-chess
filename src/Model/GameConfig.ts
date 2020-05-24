@@ -9,5 +9,6 @@ export default interface GameConfig {
 interface HistoryItem {
     from: string;
     to: string;
+    piece: string;
     color: string;
 }
