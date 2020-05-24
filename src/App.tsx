@@ -43,6 +43,11 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		strong {
 			color: var(--highlight);
 		}
+
+		a {
+			text-decoration: none;
+			color: var(--highlight);
+		}
 	`;
 
 	Announcement = styled.div`

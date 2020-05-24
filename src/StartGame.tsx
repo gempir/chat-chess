@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import GameConfig from "./Model/GameConfig";
+import GitHubButton from "react-github-btn";
 
 type props = {
     onGameStart: (config: GameConfig) => void,
@@ -49,8 +50,17 @@ export default class StartGame extends React.Component<props, state> {
                 background: var(--lighterBackground);
             }
         }
+
+        h1 {
+            display: flex;
+
+            span {
+                padding-top: 3px;
+                padding-left: 3px;
+            }
+        }
     `;
-    
+
     Rules = styled.ul`
         list-style-type: disc;
         padding-left: 20px;
@@ -62,13 +72,18 @@ export default class StartGame extends React.Component<props, state> {
 
 
     render() {
+        // @ts-ignore
+        const button = <GitHubButton href="https://github.com/gempir/twitch-chess" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star gempir/twitch-chess on GitHub">Star</GitHubButton>;
+
         return <this.Form action="" onSubmit={this.handleSubmit}>
+            <h1>Twitch-Chess {button}</h1>
+            <h3>made by <a href="https://twitch.tv/gempir">twitch.tv/gempir</a></h3>
             <label htmlFor="channel">Your twitch channel</label>
             <input type="text" name="channel" placeholder="channel" autoComplete="off" />
             <label htmlFor="chat-response-time">Seconds your chat has time to vote</label>
             <input type="number" name="chat-response-time" defaultValue="30" />
             <input type="submit" value="start game" />
-            <br/>
+            <br />
             <h2>How it works</h2>
             <this.Rules>
                 <li>Streamer will play as white (w) and chat will play as black (b)</li>

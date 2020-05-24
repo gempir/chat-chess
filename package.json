@@ -18,6 +18,7 @@
         "dank-twitch-irc": "^3.2.4",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
+        "react-github-btn": "^1.2.0",
         "styled-components": "^5.1.0"
     }
 }
