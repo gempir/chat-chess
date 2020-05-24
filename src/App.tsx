@@ -256,32 +256,6 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			const move = new Move(found[1] + found[2], found[3] + found[4]);
 
 			this.votes.addVote(data.senderUserID, move);
-			this.votes.addVote(data.senderUserID + "1", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "3", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "2", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "3", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "4", new Move("f1", "f4"));
-			this.votes.addVote(data.senderUserID + "5", new Move("f1", "f4"));
-			this.votes.addVote(data.senderUserID + "6", new Move("f1", "f4"));
-			this.votes.addVote(data.senderUserID + "7", new Move("f1", "f4"));
-			this.votes.addVote(data.senderUserID + "8", new Move("f1", "f4"));
-			this.votes.addVote(data.senderUserID + "9", new Move("f1", "f4"));
-			this.votes.addVote(data.senderUserID + "10", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "11", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "13", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "14", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "15", new Move("f2", "f4"));
-			this.votes.addVote(data.senderUserID + "16", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "17", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "18", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "19", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "20", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "21", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "22", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "23", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "24", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "25", new Move("f3", "f4"));
-			this.votes.addVote(data.senderUserID + "26", new Move("f3", "f4"));
 		}
 	}
 }
