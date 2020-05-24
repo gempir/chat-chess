@@ -5,7 +5,7 @@
     "license": "MIT",
     "scripts": {
         "watch": "parcel index.html",
-        "build": "parcel build index.html --no-minify"
+        "build": "parcel build index.html"
     },
     "devDependencies": {
         "@types/react": "^16.9.35",
