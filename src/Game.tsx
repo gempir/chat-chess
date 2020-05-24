@@ -49,7 +49,7 @@ export default class Game extends React.Component<props, state> {
                 div[data-testid=bottom-left-a], div[data-testid=column-b], div[data-testid=column-c], div[data-testid=column-d], div[data-testid=column-e], div[data-testid=column-f], div[data-testid=column-g], div[data-testid=column-h] {
                     font-size: 2.5rem !important;
                     color: var(--text) !important;
-                    margin-top: 7vh !important;
+                    margin-top: 5vh !important;
                     padding-left: 0 !important;
                     margin-left: 0 !important;
                 }
