@@ -39,18 +39,16 @@ export default class Game extends React.Component<props, state> {
             > div:first-child {
                 user-select: none;
                 
-                > div:first-child, > div:last-child, div[data-testid=bottom-left-1] {
+                > div:first-child:not([data-testid]), > div:last-child:not([data-testid]), div[data-testid=bottom-left-1] {
                     font-size: 2.5rem !important;
-                    margin-left: -3vh !important;
+                    margin-left: -4vh !important;
                     align-self: center !important;
                     color: var(--text) !important;
-
-                    svg {
-                        margin-left: 3vh !important;
-                    }
                 }
 
                 div[data-testid=bottom-left-a], div[data-testid=column-b], div[data-testid=column-c], div[data-testid=column-d], div[data-testid=column-e], div[data-testid=column-f], div[data-testid=column-g], div[data-testid=column-h] {
+                    font-size: 2.5rem !important;
+                    color: var(--text) !important;
                     margin-top: 7vh !important;
                     padding-left: 0 !important;
                     margin-left: 0 !important;
