@@ -159,7 +159,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 	handleGameOver = () => {
 		this.setState({
-			announcement: "Game over!"
+			announcement: "Game over! Restart bottom left"
 		});
 	}
 
