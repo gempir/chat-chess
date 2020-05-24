@@ -111,7 +111,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	constructor(props) {
 		super(props);
 
-		this.moveRegex = new RegExp(/([a-h]) ?([1-8]) ?[-,_]? ?([a-h]) ?([1-8])/);
+		this.moveRegex = new RegExp(/([a-h]) ?([1-8]) ?[,_\-]? ?([a-h]) ?([1-8])/);
 
 		this.votes = new Votes();
 		this.state = this.createInitialState();
