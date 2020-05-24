@@ -122,6 +122,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			config: null,
 			popularVotes: [],
 			announcement: null,
+			timeLeft: 0,
 			...JSON.parse(window.localStorage.getItem("state"))
 		}
 	}
@@ -247,7 +248,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		window.localStorage.removeItem("state");
 		this.setState({
 			...this.createInitialState(),
-		})
+		});
 	}
 
 	handleChatMessage = (data: PrivmsgMessage) => {
