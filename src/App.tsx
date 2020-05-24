@@ -108,7 +108,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		}
 	`;
 
-	constructor(props) {
+	constructor(props: object) {
 		super(props);
 
 		this.moveRegex = new RegExp(/([a-h]) ?([1-8]) ?[,_\-]? ?([a-h]) ?([1-8])/);
@@ -214,7 +214,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 		this.votes = new Votes();
 
-		this.ticker = setInterval(() => {
+		this.ticker = window.setInterval(() => {
 			const timeLeft = this.state.timeLeft - 1;
 			this.setState({
 				announcement: "Vote now, like this: <strong>e7-e5</strong></>",
@@ -223,7 +223,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			});
 
 			if (timeLeft === 0 || timeLeft < 0) {
-				clearInterval(this.ticker);
+				window.clearInterval(this.ticker);
 
 				this.setState({
 					announcement: `Chat moved`,
