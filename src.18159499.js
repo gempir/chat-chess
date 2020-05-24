@@ -26500,15 +26500,15 @@ exports.parseBadges = parseBadges;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseColor = void 0;
 const parse_error_1 = require("./parse-error");
-const rgbColorRegex = /^#(?<r>[0-9a-fA-F]{2})(?<g>[0-9a-fA-F]{2})(?<b>[0-9a-fA-F]{2})$/;
+const rgbColorRegex = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/;
 function parseColor(colorSrc) {
     const match = rgbColorRegex.exec(colorSrc);
     if (match == null) {
         throw new parse_error_1.ParseError(`Malformed color value "${colorSrc}", must be in format #AABBCC`);
     }
-    const r = parseInt(match.groups.r, 16);
-    const g = parseInt(match.groups.g, 16);
-    const b = parseInt(match.groups.b, 16);
+    const r = parseInt(match[1], 16);
+    const g = parseInt(match[2], 16);
+    const b = parseInt(match[3], 16);
     return { r, g, b };
 }
 exports.parseColor = parseColor;
@@ -59011,4 +59011,4 @@ module.exports = function loadJSBundle(bundle) {
 },{}],0:[function(require,module,exports) {
 var b=require("z1Am");b.register("js",require("Ijyk"));
 },{}]},{},[0,"OGgv"], null)
-//# sourceMappingURL=/src.8979de76.js.map
+//# sourceMappingURL=/src.18159499.js.map
