@@ -4,6 +4,7 @@ export default interface GameConfig {
     fen: string,
     turn: string,
     history: Array<HistoryItem>,
+    subMultiplier: number,
 }
 
 interface HistoryItem {
