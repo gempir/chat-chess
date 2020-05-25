@@ -3,19 +3,27 @@ import PopularVote from "./Vote";
 
 export default class Votes {
     moves: object;
+    movesArray: Array<Move>
 
-    constructor(moves: object = {}) {
-        this.moves = moves;
+    constructor() {
+        this.moves = {};
+        this.movesArray = [];
     }
 
-    addVote(userid: string, move: Move) {
+    addVote(userid: string, move: Move, multiplier: number) {
+        if (this.moves.hasOwnProperty(userid)) return;
+
         this.moves[userid] = move;
+
+        for (let i = 0; i < multiplier; i++) {
+            this.movesArray.push(move);
+        }
     }
 
     getPopularVotesWithCounts(): Array<PopularVote> {
         const moves: { [key: string]: PopularVote } = {};
 
-        for (const [key, value] of Object.entries(this.moves)) {
+        for (const value of this.movesArray) {
             if (moves.hasOwnProperty(value.toString())) {
                 moves[value.toString()].count++;
             } else {
