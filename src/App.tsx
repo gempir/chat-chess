@@ -257,9 +257,13 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		if (found) {
 			const move = new Move(found[1] + found[2], found[3] + found[4]);
 
-			for (let i = 0; i < this.state.config.subMultiplier; i++) {
-				this.votes.addVote(data.senderUserID, move, data.ircTags.subscriber === "1" ? this.state.config.subMultiplier : 1);
+			let subMultiplier = 1;
+			if (this.state.config && data.ircTags.subscriber === "1") {
+				subMultiplier = this.state.config.subMultiplier;
 			}
+
+			this.votes.addVote(data.senderUserID, move, subMultiplier);
+
 		}
 	}
 }
