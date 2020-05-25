@@ -82,8 +82,6 @@ export default class StartGame extends React.Component<props, state> {
             <input type="text" name="channel" placeholder="channel" autoComplete="off" />
             <label htmlFor="chat-response-time">Seconds your chat has time to vote</label>
             <input type="number" name="chat-response-time" defaultValue="30" />
-            <label htmlFor="sub-only">Subscriber vote multiplier</label>
-            <input type="number" name="sub-multiplier" defaultValue="1" />
             <input type="submit" value="start game" />
             <br />
             <h2>How it works</h2>
@@ -108,8 +106,7 @@ export default class StartGame extends React.Component<props, state> {
             channel: String(data.get("channel")),
             chatResponseTime: Number(data.get("chat-response-time")),
             history: [],
-            turn: "w",
-            subMultiplier: Number(data.get("sub-multiplier"))
+            turn: "w"
         });
     }
 }
