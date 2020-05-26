@@ -14,7 +14,6 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	moveRegex: RegExp;
 	votes: Votes;
 	moveChat: (votes: Array<PopularVote>) => void;
-	tracked: Boolean;
 
 	CSSVariables = styled.div`
 		--weakText: rgb(200, 200, 200);
@@ -133,7 +132,6 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 		if (this.state.config && this.state.config.turn === "b") {
 			this.startChatVoteCollection();
-			this.track();
 		}
 	}
 
@@ -171,7 +169,6 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			config: config,
 		}, () => {
 			this.persistState();
-			this.track();
 		});
 		this.chatClient.join(config.channel);
 	}
@@ -188,14 +185,6 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 		if (this.state.config) {
 			this.chatClient.join(this.state.config.channel);
-			this.track();
-		}
-	}
-
-	track() {
-		if (this.state.config && !this.tracked) {
-			this.tracked = true;
-			fetch("https://enztord6gs0za.x.pipedream.net/?channel=" + this.state.config.channel, { mode: 'no-cors' });
 		}
 	}
 
@@ -248,7 +237,6 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		this.setState({
 			...this.createInitialState(),
 		});
-		this.tracked = false;
 	}
 
 	handleChatMessage = (data: PrivmsgMessage) => {
