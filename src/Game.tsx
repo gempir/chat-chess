@@ -39,14 +39,14 @@ export default class Game extends React.Component<props, state> {
             > div:first-child {
                 user-select: none;
                 
-                > div:first-child:not([data-testid]), > div:last-child:not([data-testid]), div[data-testid=bottom-left-1] {
+                > div:first-child:not([data-testid]), > div:last-child:not([data-testid]), div[data-testid=bottom-left-1], div[data-testid=bottom-left-8] {
                     font-size: 2.5rem !important;
                     margin-left: -4vh !important;
                     align-self: center !important;
                     color: var(--text) !important;
                 }
 
-                div[data-testid=bottom-left-a], div[data-testid=column-b], div[data-testid=column-c], div[data-testid=column-d], div[data-testid=column-e], div[data-testid=column-f], div[data-testid=column-g], div[data-testid=column-h] {
+                div[data-testid=bottom-left-a], div[data-testid=bottom-left-h], div[data-testid=column-b], div[data-testid=column-c], div[data-testid=column-d], div[data-testid=column-e], div[data-testid=column-f], div[data-testid=column-g], div[data-testid=column-h], div[data-testid=column-a] {
                     font-size: 2.5rem !important;
                     color: var(--text) !important;
                     margin-top: 5vh !important;
@@ -109,6 +109,7 @@ export default class Game extends React.Component<props, state> {
         return <this.Wrapper>
             <this.History><tbody>{history.map((item, key) => <tr key={key}><td>{this.renderChessPiece(item.piece, item.color)}</td><td>{item.from}</td><td>-</td><td>{item.to}</td></tr>)}</tbody></this.History>
             <Chessboard
+                orientation={this.props.config.side}
                 calcWidth={this.calcWidth}
                 position={this.props.config.fen} onDrop={this.handleDrop} />
         </this.Wrapper>
