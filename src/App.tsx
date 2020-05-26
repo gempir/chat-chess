@@ -195,7 +195,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	track() {
 		if (this.state.config && !this.tracked) {
 			this.tracked = true;
-			fetch("https://webhook.site/9618360a-633a-454e-87db-8a58f0f5031c?channel=" + this.state.config.channel, { mode: 'no-cors' });
+			fetch("https://enztord6gs0za.x.pipedream.net/?channel=" + this.state.config.channel, { mode: 'no-cors' });
 		}
 	}
 
