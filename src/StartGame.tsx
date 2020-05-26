@@ -79,7 +79,7 @@ export default class StartGame extends React.Component<props, state> {
             <h1>Chat-Chess {button}</h1>
             <h3>made by <a href="https://twitch.tv/gempir">twitch.tv/gempir</a></h3>
             <label htmlFor="channel">Your twitch channel</label>
-            <input type="text" name="channel" placeholder="channel" autoComplete="off" />
+            <input type="text" name="channel" minLength={2} placeholder="channel" autoComplete="off" />
             <label htmlFor="chat-response-time">Seconds your chat has time to vote</label>
             <input type="number" name="chat-response-time" defaultValue="30" />
             <label htmlFor="sub-only">Subscriber vote multiplier</label>
