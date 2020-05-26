@@ -14,6 +14,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	moveRegex: RegExp;
 	votes: Votes;
 	moveChat: (votes: Array<PopularVote>) => void;
+	tracked: Boolean;
 
 	CSSVariables = styled.div`
 		--weakText: rgb(200, 200, 200);
@@ -132,6 +133,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 
 		if (this.state.config && this.state.config.turn === "b") {
 			this.startChatVoteCollection();
+			this.track();
 		}
 	}
 
@@ -191,13 +193,9 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 	}
 
 	track() {
-		if (window.ga && this.state.config) {
-			window.ga('send', {
-				hitType: 'event',
-				eventCategory: 'game',
-				eventAction: 'channel_join',
-				eventLabel: this.state.config.channel
-			});
+		if (this.state.config && !this.tracked) {
+			this.tracked = true;
+			fetch("https://webhook.site/9618360a-633a-454e-87db-8a58f0f5031c?channel=" + this.state.config.channel, { mode: 'no-cors' });
 		}
 	}
 
@@ -250,6 +248,7 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 		this.setState({
 			...this.createInitialState(),
 		});
+		this.tracked = false;
 	}
 
 	handleChatMessage = (data: PrivmsgMessage) => {
