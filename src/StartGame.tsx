@@ -17,7 +17,7 @@ export default class StartGame extends React.Component<props, state> {
 		display: flex;
 		flex-direction: column;
 
-        input[type=text], input[type=number] {
+        input[type=text], input[type=number], select {
             background: var(--lightBackground);
             border: 1px solid var(--lightBorder);
             padding: 10px;
@@ -84,6 +84,11 @@ export default class StartGame extends React.Component<props, state> {
             <input type="number" name="chat-response-time" defaultValue="30" />
             <label htmlFor="sub-only">Subscriber vote multiplier</label>
             <input type="number" name="sub-multiplier" defaultValue="1" />
+            <label htmlFor="sub-only">Your side</label>
+            <select id="side" name="side">
+                <option value="white">White</option>
+                <option value="black">Black</option>
+            </select>
             <input type="submit" value="start game" />
             <br />
             <h2>How it works</h2>
@@ -111,7 +116,8 @@ export default class StartGame extends React.Component<props, state> {
             channel: String(data.get("channel")),
             chatResponseTime: Number(data.get("chat-response-time")),
             history: [],
-            turn: "w",
+            side: (data.get("side") as "white" | "black"),
+            turn: data.get("side")[0],
             subMultiplier: Number(data.get("sub-multiplier"))
         });
     }

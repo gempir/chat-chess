@@ -169,6 +169,9 @@ export default class App extends React.Component<{}, { config: GameConfig, popul
 			config: config,
 		}, () => {
 			this.persistState();
+			if (config.side === "black") {
+				this.startChatVoteCollection();
+			}
 		});
 		this.chatClient.join(config.channel);
 	}

@@ -109,6 +109,7 @@ export default class Game extends React.Component<props, state> {
         return <this.Wrapper>
             <this.History><tbody>{history.map((item, key) => <tr key={key}><td>{this.renderChessPiece(item.piece, item.color)}</td><td>{item.from}</td><td>-</td><td>{item.to}</td></tr>)}</tbody></this.History>
             <Chessboard
+                orientation={this.props.config.side}
                 calcWidth={this.calcWidth}
                 position={this.props.config.fen} onDrop={this.handleDrop} />
         </this.Wrapper>
@@ -135,7 +136,7 @@ export default class Game extends React.Component<props, state> {
     }
 
     handleDrop = ({ sourceSquare, targetSquare, piece }) => {
-        if (piece.startsWith("b") || this.game.turn() !== piece.slice(0, 1)) return;
+        if (!piece.startsWith(this.props.config.side[0]) || this.game.turn() !== piece.slice(0, 1)) return;
 
         const moveObj = new Move(sourceSquare, targetSquare);
         const keepGoing = this.makeMove(moveObj);
