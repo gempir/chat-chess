@@ -84,7 +84,7 @@ export default class StartGame extends React.Component<props, state> {
             <input type="number" name="chat-response-time" defaultValue="30" />
             <label htmlFor="sub-only">Subscriber vote multiplier</label>
             <input type="number" name="sub-multiplier" defaultValue="1" />
-            <label htmlFor="sub-only">Your side</label>
+            <label htmlFor="sub-only">Streamer side</label>
             <select id="side" name="side">
                 <option value="white">White</option>
                 <option value="black">Black</option>
@@ -93,7 +93,6 @@ export default class StartGame extends React.Component<props, state> {
             <br />
             <h2>How it works</h2>
             <this.Rules>
-                <li>Streamer will play as white and chat will play as black</li>
                 <li>Streamer has unlimited time to move</li>
                 <li>After Streamer moved chat has configured amount of time to vote on a move</li>
                 <li>Vote in chat with a notation like "<strong>e5-e7</strong>" anywhere in the message, but only 1 vote per user</li>
