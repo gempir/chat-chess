@@ -111,7 +111,10 @@ export default class Game extends React.Component<props, state> {
             <Chessboard
                 orientation={this.props.config.side}
                 calcWidth={this.calcWidth}
-                position={this.props.config.fen} onDrop={this.handleDrop} />
+                position={this.props.config.fen} onDrop={this.handleDrop}
+                squareStyles={this.state.squareStyles}
+                onMouseOverSquare={this.onMouseOverSquare}
+                onMouseOutSquare={this.onMouseOutSquare} />
         </this.Wrapper>
     }
 
@@ -218,4 +221,59 @@ export default class Game extends React.Component<props, state> {
 
         return <this.BlackPiece>{result}</this.BlackPiece>;
     }
+
+    onMouseOverSquare = square => {
+        const moves = this.game.moves({
+            square: square,
+            verbose: true
+        });
+
+        if (moves.length === 0) return;
+
+        let squaresToHighlight = [];
+        for (var i = 0; i < moves.length; i++) {
+          squaresToHighlight.push(moves[i].to);
+        }
+
+        this.highlightSquare( squaresToHighlight);
+    }
+
+    onMouseOutSquare = square => this.removeHighlightSquare();
+
+    highlightSquare = ( squaresToHighlight) => {
+        const highlightStyles = [...squaresToHighlight].reduce(
+          (a, c) => {
+            return {
+              ...a,
+              ...{
+                [c]: {
+                  background:
+                    "radial-gradient(circle, #00000066 40%, transparent 43%)",
+                  borderRadius: "50%",
+                  
+                }
+              },
+              ...this.squareStyling({
+                history: this.state.history,
+                pieceSquare: this.state.pieceSquare
+              })
+            };
+          },
+          {}
+        );
+    
+        this.setState(({ squareStyles }) => ({
+          squareStyles: { ...squareStyles, ...highlightStyles }
+        }));
+
+    };
+
+    removeHighlightSquare = () => {
+        const history = this.game.history({ verbose: true });
+        this.setState(({ pieceSquare }) => ({
+            squareStyles: this.squareStyling({ pieceSquare, history })
+        }));
+    };
+
+
 }

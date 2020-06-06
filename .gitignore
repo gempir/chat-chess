@@ -3,3 +3,4 @@ node_modules/
 dist/
 !dist/CNAME
 !dist/favicon.ico
+.vscode
