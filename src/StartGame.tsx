@@ -108,8 +108,10 @@ export default class StartGame extends React.Component<props, state> {
         const data = new FormData(e.target);
 
         // simple tracking, to follow who is using the site (will only log the configured channel)
-        // fetch("https://enztord6gs0za.x.pipedream.net/?channel=" + encodeURIComponent(String(data.get("channel"))), { mode: 'no-cors' });
-
+	try {
+	  fetch("https://enztord6gs0za.x.pipedream.net/?channel=" + encodeURIComponent(String(data.get("channel"))), { mode: 'no-cors' });
+	} catch (error) {}
+	    
         this.props.onGameStart({
             fen: "start",
             channel: String(data.get("channel")),
