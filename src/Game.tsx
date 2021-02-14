@@ -41,7 +41,7 @@ export default class Game extends React.Component<props, state> {
                 
                 > div:first-child:not([data-testid]), > div:last-child:not([data-testid]), div[data-testid=bottom-left-1], div[data-testid=bottom-left-8] {
                     font-size: 2.5rem !important;
-                    margin-left: -4vh !important;
+                    margin-left: -8vh !important;
                     align-self: center !important;
                     color: var(--text) !important;
                 }
@@ -49,7 +49,7 @@ export default class Game extends React.Component<props, state> {
                 div[data-testid=bottom-left-a], div[data-testid=bottom-left-h], div[data-testid=column-b], div[data-testid=column-c], div[data-testid=column-d], div[data-testid=column-e], div[data-testid=column-f], div[data-testid=column-g], div[data-testid=column-h], div[data-testid=column-a] {
                     font-size: 2.5rem !important;
                     color: var(--text) !important;
-                    margin-top: 5vh !important;
+                    bottom: 30px;
                     padding-left: 0 !important;
                     margin-left: 0 !important;
                 }
@@ -232,38 +232,38 @@ export default class Game extends React.Component<props, state> {
 
         let squaresToHighlight = [];
         for (var i = 0; i < moves.length; i++) {
-          squaresToHighlight.push(moves[i].to);
+            squaresToHighlight.push(moves[i].to);
         }
 
-        this.highlightSquare( squaresToHighlight);
+        this.highlightSquare(squaresToHighlight);
     }
 
     onMouseOutSquare = square => this.removeHighlightSquare();
 
-    highlightSquare = ( squaresToHighlight) => {
+    highlightSquare = (squaresToHighlight) => {
         const highlightStyles = [...squaresToHighlight].reduce(
-          (a, c) => {
-            return {
-              ...a,
-              ...{
-                [c]: {
-                  background:
-                    "radial-gradient(circle, #00000066 40%, transparent 43%)",
-                  borderRadius: "50%",
-                  
-                }
-              },
-              ...this.squareStyling({
-                history: this.state.history,
-                pieceSquare: this.state.pieceSquare
-              })
-            };
-          },
-          {}
+            (a, c) => {
+                return {
+                    ...a,
+                    ...{
+                        [c]: {
+                            background:
+                                "radial-gradient(circle, #00000066 40%, transparent 43%)",
+                            borderRadius: "50%",
+
+                        }
+                    },
+                    ...this.squareStyling({
+                        history: this.state.history,
+                        pieceSquare: this.state.pieceSquare
+                    })
+                };
+            },
+            {}
         );
-    
+
         this.setState(({ squareStyles }) => ({
-          squareStyles: { ...squareStyles, ...highlightStyles }
+            squareStyles: { ...squareStyles, ...highlightStyles }
         }));
 
     };
